@@ -16,7 +16,10 @@ $PythonVersionsDir = Join-Path $PythonDir "versions"
 $UvCache = Join-Path $CacheDir "uv"
 
 function Ensure-Dir {
-    param([string]$Path)
+    param(
+        [string]$Path
+    )
+
     if (-not (Test-Path $Path)) {
         New-Item -ItemType Directory -Path $Path | Out-Null
     }
@@ -65,6 +68,8 @@ if (-not (Test-Path $VscodeExe)) {
     Write-Host "[1/5] VS Code already exists."
 }
 
+Ensure-Dir $VscodeData
+
 if (-not (Test-Path $UvExe)) {
     Write-Host "[2/5] Installing uv..."
 
@@ -84,7 +89,7 @@ $env:UV_PYTHON_INSTALL_DIR = $PythonVersionsDir
 $env:UV_CACHE_DIR = $UvCache
 
 Write-Host "[3/5] Installing Python 3.12..."
-Start-Process -FilePath $UvExe -ArgumentList @("python", "install", "3.12") -Wait -NoNewWindow
+& $UvExe python install 3.12
 
 $HelloDir = Join-Path $ProjectsDir "hello-python"
 $VscodeProjectDir = Join-Path $HelloDir ".vscode"
@@ -93,6 +98,7 @@ Ensure-Dir $HelloDir
 Ensure-Dir $VscodeProjectDir
 
 $MainPy = Join-Path $HelloDir "main.py"
+
 if (-not (Test-Path $MainPy)) {
     Set-Content -Path $MainPy -Encoding UTF8 -Value @(
         'print("Hello from PyDevCatalog!")',
@@ -101,6 +107,7 @@ if (-not (Test-Path $MainPy)) {
 }
 
 $PyProject = Join-Path $HelloDir "pyproject.toml"
+
 if (-not (Test-Path $PyProject)) {
     Set-Content -Path $PyProject -Encoding UTF8 -Value @(
         '[project]',
@@ -113,6 +120,7 @@ if (-not (Test-Path $PyProject)) {
 }
 
 $SettingsJson = Join-Path $VscodeProjectDir "settings.json"
+
 Set-Content -Path $SettingsJson -Encoding UTF8 -Value @(
     '{',
     '  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",',
@@ -127,7 +135,7 @@ $VenvPython = Join-Path $VenvDir "Scripts\python.exe"
 
 if (-not (Test-Path $VenvPython)) {
     Write-Host "[4/5] Creating virtual environment..."
-    Start-Process -FilePath $UvExe -ArgumentList @("venv", $VenvDir, "--python", "3.12") -Wait -NoNewWindow
+    & $UvExe venv "$VenvDir" --python 3.12
 } else {
     Write-Host "[4/5] Virtual environment already exists."
 }
@@ -147,8 +155,9 @@ if (Test-Path $CodeCmd) {
 
     foreach ($Ext in $Extensions) {
         Write-Host "Installing extension: $Ext"
+
         try {
-            Start-Process -FilePath $CodeCmd -ArgumentList @("--install-extension", $Ext, "--force") -Wait -NoNewWindow
+            & $CodeCmd --install-extension $Ext --force
         } catch {
             Write-Host "Warning: failed to install extension: $Ext"
         }
