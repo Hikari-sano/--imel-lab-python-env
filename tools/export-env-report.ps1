@@ -9,7 +9,7 @@ if (-not (Test-Path $ReportDir)) {
 $Stamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $ReportPath = Join-Path $ReportDir "env_report_$Stamp.txt"
 $TreePath = Join-Path $ReportDir "file_tree_$Stamp.txt"
-$PromptPath = Join-Path $ReportDir "AI相談用_prompt_$Stamp.txt"
+$PromptPath = Join-Path $ReportDir "AI_prompt_$Stamp.txt"
 
 $ExcludeDirs = @(
     ".git",
@@ -52,6 +52,11 @@ function Safe-Text {
 function Add-Line {
     param([string]$Text = "")
     Add-Content -Path $ReportPath -Encoding UTF8 -Value (Safe-Text $Text)
+}
+
+function Add-TreeLine {
+    param([string]$Text = "")
+    Add-Content -Path $TreePath -Encoding UTF8 -Value (Safe-Text $Text)
 }
 
 function Add-Section {
@@ -112,11 +117,11 @@ function Write-Tree {
         [string]$Path,
         [string]$Prefix = "",
         [int]$Depth = 0,
-        [int]$MaxDepth = 6
+        [int]$MaxDepth = 8
     )
 
     if ($Depth -gt $MaxDepth) {
-        Add-Content -Path $TreePath -Encoding UTF8 -Value ($Prefix + "... max depth omitted")
+        Add-TreeLine ($Prefix + "... max depth omitted")
         return
     }
 
@@ -131,27 +136,27 @@ function Write-Tree {
     foreach ($child in $children) {
         $label = $child.Name
         if ($child.PSIsContainer) {
-            Add-Content -Path $TreePath -Encoding UTF8 -Value ($Prefix + "[D] " + $label + "/")
+            Add-TreeLine ($Prefix + "[D] " + $label + "/")
             Write-Tree -Path $child.FullName -Prefix ($Prefix + "    ") -Depth ($Depth + 1) -MaxDepth $MaxDepth
         } else {
             $size = $child.Length
-            Add-Content -Path $TreePath -Encoding UTF8 -Value ($Prefix + "[F] " + $label + "  (" + $size + " bytes)")
+            Add-TreeLine ($Prefix + "[F] " + $label + "  (" + $size + " bytes)")
         }
     }
 }
 
-# Write file tree report first
+# File tree report
 Set-Content -Path $TreePath -Encoding UTF8 -Value "Mimel Lab File Tree"
-Add-Content -Path $TreePath -Encoding UTF8 -Value "Created: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
-Add-Content -Path $TreePath -Encoding UTF8 -Value "Root: $(Safe-Text $Root)"
-Add-Content -Path $TreePath -Encoding UTF8 -Value ""
-Add-Content -Path $TreePath -Encoding UTF8 -Value "Excluded folders: $($ExcludeDirs -join ', ')"
-Add-Content -Path $TreePath -Encoding UTF8 -Value "Excluded extensions: $($ExcludeExtensions -join ', ')"
-Add-Content -Path $TreePath -Encoding UTF8 -Value "Note: File contents are NOT included. Large model/media files are omitted."
-Add-Content -Path $TreePath -Encoding UTF8 -Value ""
+Add-TreeLine "Created: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+Add-TreeLine "Root: $Root"
+Add-TreeLine ""
+Add-TreeLine "Excluded folders: $($ExcludeDirs -join ', ')"
+Add-TreeLine "Excluded extensions: $($ExcludeExtensions -join ', ')"
+Add-TreeLine "Note: File contents are NOT included. Large model/media files are omitted."
+Add-TreeLine ""
 Write-Tree -Path $Root -Prefix "" -Depth 0 -MaxDepth 8
 
-# Start main report
+# Main report
 Set-Content -Path $ReportPath -Encoding UTF8 -Value "Mimel Lab Environment Report"
 Add-Line "Created: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 Add-Line "Root: $Root"
@@ -161,7 +166,7 @@ Add-Line "Do not paste API keys, passwords, tokens, or private research data."
 Add-Line "File contents are not collected. File tree excludes large model/media/runtime folders."
 
 Add-Section "Quick Summary"
-Add-Line "If you ask AI for help, paste the AI相談用_prompt file first."
+Add-Line "If you ask AI for help, paste the AI_prompt file first."
 Add-Line "Then attach or paste env_report and file_tree if needed."
 
 Run-PS "OS / PowerShell" {
@@ -232,12 +237,12 @@ Run-PS "VS Code" {
 }
 
 Run-PS "uv / Python" {
-    $UvExe = Join-Path $Root "python\uv\uv.exe"
-    if (Test-Path $UvExe) {
-        "uv.exe: $UvExe"
-        & $UvExe --version
+    $LocalUvExe = Join-Path $Root "python\uv\uv.exe"
+    if (Test-Path $LocalUvExe) {
+        "uv.exe: $LocalUvExe"
+        & $LocalUvExe --version
         "uv python list:"
-        & $UvExe python list
+        & $LocalUvExe python list
     } else {
         "uv.exe not found"
     }
@@ -293,25 +298,25 @@ Run-PS "Disk Space" {
     Get-PSDrive -PSProvider FileSystem | Select-Object Name, Root, Used, Free | Format-Table -AutoSize
 }
 
-$prompt = @"
-以下は Mimel Lab Python / AI 環境のトラブル相談です。
-私はPythonやVS Codeの環境に詳しくない可能性があります。
-下の環境レポートとファイル構造を前提に、原因と解決手順を初心者向けに説明してください。
-
-相談したい内容:
-- ここに困っていることを書いてください。
-- 例: YOLO_RUN.bat でエラーが出る / Start.bat が止まる / VS Codeで実行できない
-
-共有するファイル:
-1. $ReportPath
-2. $TreePath
-
-注意:
-- APIキー、パスワード、研究データの中身は貼りません。
-- ファイル構造にはファイル名やフォルダ名が含まれます。共有前に確認してください。
-- USERPROFILE と USERNAME は可能な範囲でマスクされています。
-"@
-Set-Content -Path $PromptPath -Encoding UTF8 -Value (Safe-Text $prompt)
+$PromptLines = @(
+    "以下は Mimel Lab Python / AI 環境のトラブル相談です。",
+    "私はPythonやVS Codeの環境に詳しくない可能性があります。",
+    "下の環境レポートとファイル構造を前提に、原因と解決手順を初心者向けに説明してください。",
+    "",
+    "相談したい内容:",
+    "- ここに困っていることを書いてください。",
+    "- 例: YOLO_RUN.bat でエラーが出る / Start.bat が止まる / VS Codeで実行できない",
+    "",
+    "共有するファイル:",
+    "1. $ReportPath",
+    "2. $TreePath",
+    "",
+    "注意:",
+    "- APIキー、パスワード、研究データの中身は貼りません。",
+    "- ファイル構造にはファイル名やフォルダ名が含まれます。共有前に確認してください。",
+    "- USERPROFILE と USERNAME は可能な範囲でマスクされています。"
+)
+Set-Content -Path $PromptPath -Encoding UTF8 -Value ($PromptLines | ForEach-Object { Safe-Text $_ })
 
 Write-Host "Report created: $ReportPath"
 Write-Host "File tree created: $TreePath"
