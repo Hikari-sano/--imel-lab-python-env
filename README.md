@@ -1,4 +1,4 @@
-# Mimel Lab Python / AI Environment
+# MEMIL Python / AI Environment
 
 **日本語** | [English](#english)
 
