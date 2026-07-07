@@ -36,10 +36,27 @@ function New-ProjectVenv {
     return $PythonExe
 }
 
+function Write-ProjectVscodeSettings {
+    param([string]$ProjectDir)
+    $VsDir = Join-Path $ProjectDir ".vscode"
+    Ensure-Dir $VsDir
+    $SettingsPath = Join-Path $VsDir "settings.json"
+    Set-Content -Path $SettingsPath -Encoding UTF8 -Value @(
+        '{',
+        '  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",',
+        '  "python.terminal.activateEnvironment": true,',
+        '  "python.analysis.extraPaths": [',
+        '    "${workspaceFolder}\\.venv\\Lib\\site-packages"',
+        '  ]',
+        '}'
+    )
+}
+
 Ensure-Uv
 
 $ProjectDir = Join-Path $Root "projects\whisper-sample"
 $PythonExe = New-ProjectVenv -ProjectDir $ProjectDir
+Write-ProjectVscodeSettings -ProjectDir $ProjectDir
 
 Write-Host "Installing Whisper..."
 & $UvExe pip install --python "$PythonExe" -U openai-whisper
@@ -60,19 +77,35 @@ Set-Content -Path $MainPy -Encoding UTF8 -Value @(
     'print(result["text"])'
 )
 
-$Readme = Join-Path $ProjectDir "README.md"
-Set-Content -Path $Readme -Encoding UTF8 -Value @(
-    '# Whisper sample',
+$RunBat = Join-Path $ProjectDir "RUN_WHISPER.bat"
+Set-Content -Path $RunBat -Encoding ASCII -Value @(
+    '@echo off',
+    'setlocal',
+    'cd /d "%~dp0"',
+    'echo Drag and drop an audio file onto this window, then press Enter.',
+    'set /p AUDIO=Audio file path: ',
+    'if "%AUDIO%"=="" (',
+    '  echo No file selected.',
+    '  pause',
+    '  exit /b 1',
+    ')',
+    '".\.venv\Scripts\python.exe" "main.py" "%AUDIO%"',
+    'pause',
+    'endlocal'
+)
+
+$ReadmeFirst = Join-Path $ProjectDir "README_FIRST.txt"
+Set-Content -Path $ReadmeFirst -Encoding UTF8 -Value @(
+    'Whisper sample - beginner guide',
     '',
-    'Whisper requires ffmpeg. If transcription fails, install ffmpeg first.',
+    '1. Run RUN_WHISPER.bat.',
+    '2. Drag and drop an audio file into the window.',
+    '3. Press Enter.',
     '',
-    'Run:',
-    '',
-    '```powershell',
-    '.\.venv\Scripts\python.exe main.py sample.mp3',
-    '```'
+    'Note: ffmpeg is required. If it fails, ask the lab support person to install ffmpeg.'
 )
 
 Write-Host "Whisper project created: $ProjectDir"
+Write-Host "Beginner run file: $RunBat"
 Write-Host "Note: ffmpeg is required for audio/video decoding."
 Write-Host "Done."

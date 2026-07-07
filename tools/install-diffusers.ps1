@@ -36,10 +36,27 @@ function New-ProjectVenv {
     return $PythonExe
 }
 
+function Write-ProjectVscodeSettings {
+    param([string]$ProjectDir)
+    $VsDir = Join-Path $ProjectDir ".vscode"
+    Ensure-Dir $VsDir
+    $SettingsPath = Join-Path $VsDir "settings.json"
+    Set-Content -Path $SettingsPath -Encoding UTF8 -Value @(
+        '{',
+        '  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",',
+        '  "python.terminal.activateEnvironment": true,',
+        '  "python.analysis.extraPaths": [',
+        '    "${workspaceFolder}\\.venv\\Lib\\site-packages"',
+        '  ]',
+        '}'
+    )
+}
+
 Ensure-Uv
 
 $ProjectDir = Join-Path $Root "projects\diffusers-sample"
 $PythonExe = New-ProjectVenv -ProjectDir $ProjectDir
+Write-ProjectVscodeSettings -ProjectDir $ProjectDir
 
 Write-Host "Installing Diffusers..."
 & $UvExe pip install --python "$PythonExe" -U torch --index-url https://download.pytorch.org/whl/cpu
@@ -51,12 +68,24 @@ Set-Content -Path $MainPy -Encoding UTF8 -Value @(
     'print("CPU image generation can be very slow. GPU is recommended for large diffusion models.")'
 )
 
-$Readme = Join-Path $ProjectDir "README.md"
-Set-Content -Path $Readme -Encoding UTF8 -Value @(
-    '# Diffusers sample',
+$RunBat = Join-Path $ProjectDir "RUN_DIFFUSERS.bat"
+Set-Content -Path $RunBat -Encoding ASCII -Value @(
+    '@echo off',
+    'setlocal',
+    'cd /d "%~dp0"',
+    '".\.venv\Scripts\python.exe" "main.py"',
+    'pause',
+    'endlocal'
+)
+
+$ReadmeFirst = Join-Path $ProjectDir "README_FIRST.txt"
+Set-Content -Path $ReadmeFirst -Encoding UTF8 -Value @(
+    'Diffusers sample - beginner guide',
     '',
-    'Diffusers is installed. Large image generation models may require a GPU and significant disk space.'
+    'Double-click RUN_DIFFUSERS.bat to check the environment.',
+    'Large image generation models usually require a GPU.'
 )
 
 Write-Host "Diffusers project created: $ProjectDir"
+Write-Host "Beginner run file: $RunBat"
 Write-Host "Done."

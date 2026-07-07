@@ -36,10 +36,27 @@ function New-ProjectVenv {
     return $PythonExe
 }
 
+function Write-ProjectVscodeSettings {
+    param([string]$ProjectDir)
+    $VsDir = Join-Path $ProjectDir ".vscode"
+    Ensure-Dir $VsDir
+    $SettingsPath = Join-Path $VsDir "settings.json"
+    Set-Content -Path $SettingsPath -Encoding UTF8 -Value @(
+        '{',
+        '  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",',
+        '  "python.terminal.activateEnvironment": true,',
+        '  "python.analysis.extraPaths": [',
+        '    "${workspaceFolder}\\.venv\\Lib\\site-packages"',
+        '  ]',
+        '}'
+    )
+}
+
 Ensure-Uv
 
 $ProjectDir = Join-Path $Root "projects\transformers-sample"
 $PythonExe = New-ProjectVenv -ProjectDir $ProjectDir
+Write-ProjectVscodeSettings -ProjectDir $ProjectDir
 
 Write-Host "Installing Hugging Face Transformers..."
 & $UvExe pip install --python "$PythonExe" -U torch --index-url https://download.pytorch.org/whl/cpu
@@ -54,16 +71,23 @@ Set-Content -Path $MainPy -Encoding UTF8 -Value @(
     'print(result)'
 )
 
-$Readme = Join-Path $ProjectDir "README.md"
-Set-Content -Path $Readme -Encoding UTF8 -Value @(
-    '# Transformers sample',
+$RunBat = Join-Path $ProjectDir "RUN_TRANSFORMERS.bat"
+Set-Content -Path $RunBat -Encoding ASCII -Value @(
+    '@echo off',
+    'setlocal',
+    'cd /d "%~dp0"',
+    '".\.venv\Scripts\python.exe" "main.py"',
+    'pause',
+    'endlocal'
+)
+
+$ReadmeFirst = Join-Path $ProjectDir "README_FIRST.txt"
+Set-Content -Path $ReadmeFirst -Encoding UTF8 -Value @(
+    'Transformers sample - beginner guide',
     '',
-    'Run:',
-    '',
-    '```powershell',
-    '.\.venv\Scripts\python.exe main.py',
-    '```'
+    'Double-click RUN_TRANSFORMERS.bat.'
 )
 
 Write-Host "Transformers project created: $ProjectDir"
+Write-Host "Beginner run file: $RunBat"
 Write-Host "Done."

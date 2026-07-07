@@ -14,6 +14,8 @@ echo 5. Install Diffusers
 echo 6. Open projects folder
 echo 7. Exit
 echo.
+echo Tip: Beginners can use YOLO_INSTALL.bat and YOLO_RUN.bat instead.
+echo.
 set /p CHOICE=Select number: 
 
 if "%CHOICE%"=="1" (

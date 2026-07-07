@@ -36,10 +36,27 @@ function New-ProjectVenv {
     return $PythonExe
 }
 
+function Write-ProjectVscodeSettings {
+    param([string]$ProjectDir)
+    $VsDir = Join-Path $ProjectDir ".vscode"
+    Ensure-Dir $VsDir
+    $SettingsPath = Join-Path $VsDir "settings.json"
+    Set-Content -Path $SettingsPath -Encoding UTF8 -Value @(
+        '{',
+        '  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",',
+        '  "python.terminal.activateEnvironment": true,',
+        '  "python.analysis.extraPaths": [',
+        '    "${workspaceFolder}\\.venv\\Lib\\site-packages"',
+        '  ]',
+        '}'
+    )
+}
+
 Ensure-Uv
 
 $ProjectDir = Join-Path $Root "projects\yolo-sample"
 $PythonExe = New-ProjectVenv -ProjectDir $ProjectDir
+Write-ProjectVscodeSettings -ProjectDir $ProjectDir
 
 Write-Host "Installing YOLO / Ultralytics..."
 & $UvExe pip install --python "$PythonExe" -U ultralytics
@@ -57,11 +74,49 @@ Set-Content -Path $MainPy -Encoding UTF8 -Value @(
     'print("YOLO sample finished. Check yolo_result.jpg")'
 )
 
+$RunBat = Join-Path $ProjectDir "RUN_YOLO.bat"
+Set-Content -Path $RunBat -Encoding ASCII -Value @(
+    '@echo off',
+    'setlocal',
+    'cd /d "%~dp0"',
+    'echo ========================================',
+    'echo Running YOLO sample',
+    'echo ========================================',
+    'if not exist ".\.venv\Scripts\python.exe" (',
+    '  echo [ERROR] Python environment not found.',
+    '  echo Please run YOLO_INSTALL.bat again.',
+    '  pause',
+    '  exit /b 1',
+    ')',
+    '".\.venv\Scripts\python.exe" "main.py"',
+    'echo.',
+    'echo Finished. Check yolo_result.jpg in this folder.',
+    'pause',
+    'endlocal'
+)
+
+$ReadmeFirst = Join-Path $ProjectDir "README_FIRST.txt"
+Set-Content -Path $ReadmeFirst -Encoding UTF8 -Value @(
+    'YOLO sample - beginner guide',
+    '',
+    '1. Double-click RUN_YOLO.bat.',
+    '2. The first run may download a YOLO model file and can take time.',
+    '3. After completion, check yolo_result.jpg.',
+    '',
+    'Important:',
+    'Do not use the VS Code Run button if you are not sure which Python interpreter is selected.',
+    'Use RUN_YOLO.bat instead.'
+)
+
 $Readme = Join-Path $ProjectDir "README.md"
 Set-Content -Path $Readme -Encoding UTF8 -Value @(
     '# YOLO sample',
     '',
-    'Run:',
+    'Recommended for beginners:',
+    '',
+    'Double-click `RUN_YOLO.bat`.',
+    '',
+    'Manual run:',
     '',
     '```powershell',
     '.\.venv\Scripts\python.exe main.py',
@@ -69,4 +124,5 @@ Set-Content -Path $Readme -Encoding UTF8 -Value @(
 )
 
 Write-Host "YOLO project created: $ProjectDir"
+Write-Host "Beginner run file: $RunBat"
 Write-Host "Done."

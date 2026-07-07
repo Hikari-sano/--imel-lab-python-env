@@ -36,12 +36,29 @@ function New-ProjectVenv {
     return $PythonExe
 }
 
+function Write-ProjectVscodeSettings {
+    param([string]$ProjectDir)
+    $VsDir = Join-Path $ProjectDir ".vscode"
+    Ensure-Dir $VsDir
+    $SettingsPath = Join-Path $VsDir "settings.json"
+    Set-Content -Path $SettingsPath -Encoding UTF8 -Value @(
+        '{',
+        '  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",',
+        '  "python.terminal.activateEnvironment": true,',
+        '  "python.analysis.extraPaths": [',
+        '    "${workspaceFolder}\\.venv\\Lib\\site-packages"',
+        '  ]',
+        '}'
+    )
+}
+
 Ensure-Uv
 
 $ProjectDir = Join-Path $Root "projects\sam-sample"
 $ModelDir = Join-Path $Root "models\sam"
 Ensure-Dir $ModelDir
 $PythonExe = New-ProjectVenv -ProjectDir $ProjectDir
+Write-ProjectVscodeSettings -ProjectDir $ProjectDir
 
 Write-Host "Installing SAM dependencies..."
 & $UvExe pip install --python "$PythonExe" -U torch torchvision --index-url https://download.pytorch.org/whl/cpu
@@ -55,18 +72,26 @@ Set-Content -Path $MainPy -Encoding UTF8 -Value @(
     'print("Recommended small checkpoint: sam_vit_b_01ec64.pth")'
 )
 
-$Readme = Join-Path $ProjectDir "README.md"
-Set-Content -Path $Readme -Encoding UTF8 -Value @(
-    '# SAM sample',
+$RunBat = Join-Path $ProjectDir "RUN_SAM.bat"
+Set-Content -Path $RunBat -Encoding ASCII -Value @(
+    '@echo off',
+    'setlocal',
+    'cd /d "%~dp0"',
+    '".\.venv\Scripts\python.exe" "main.py"',
+    'pause',
+    'endlocal'
+)
+
+$ReadmeFirst = Join-Path $ProjectDir "README_FIRST.txt"
+Set-Content -Path $ReadmeFirst -Encoding UTF8 -Value @(
+    'SAM sample - beginner guide',
     '',
-    'This installer sets up the SAM Python package and creates a model folder:',
-    '',
-    '../../models/sam/',
-    '',
-    'Download a SAM checkpoint manually and place it there.',
-    'Recommended small model: sam_vit_b_01ec64.pth'
+    '1. This installer prepares SAM Python packages.',
+    '2. SAM model checkpoint files must be placed in ../../models/sam/.',
+    '3. Double-click RUN_SAM.bat to check the environment.'
 )
 
 Write-Host "SAM project created: $ProjectDir"
 Write-Host "Model folder: $ModelDir"
+Write-Host "Beginner run file: $RunBat"
 Write-Host "Done."
