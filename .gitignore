@@ -19,3 +19,30 @@ Desktop.ini
 # VS Code local workspace files if someone opens the repo itself
 .vscode/*
 !.vscode/settings.example.json
+# AI model files and generated outputs
+models/
+
+# Python virtual environments
+
+
+# AI output folders
+projects/*/runs/
+projects/**/runs/
+
+# Model files
+projects/**/*.pt
+projects/**/*.pth
+projects/**/*.onnx
+projects/**/*.safetensors
+projects/**/*.ckpt
+projects/**/*.bin
+
+# Generated media files
+projects/**/*.jpg
+projects/**/*.jpeg
+projects/**/*.png
+projects/**/*.mp4
+projects/**/*.avi
+projects/**/*.mov
+projects/**/*.wav
+projects/**/*.mp3

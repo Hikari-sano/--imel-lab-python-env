@@ -1,0 +1,66 @@
+{
+  "name": "Mimel Lab AI Catalog",
+  "version": "0.1.0",
+  "items": [
+    {
+      "id": "yolo",
+      "name": "YOLO / Ultralytics",
+      "category": "image-detection",
+      "description": "物体検出・セグメンテーション・分類・姿勢推定を行うYOLO環境を導入します。",
+      "script": "tools/install-yolo.ps1",
+      "project": "projects/yolo-sample",
+      "difficulty": "easy",
+      "gpu": "optional",
+      "size": "medium",
+      "tags": ["画像認識", "物体検出", "YOLO"]
+    },
+    {
+      "id": "whisper",
+      "name": "Whisper",
+      "category": "speech",
+      "description": "音声ファイルを文字起こしするWhisper環境を導入します。ffmpegが必要です。",
+      "script": "tools/install-whisper.ps1",
+      "project": "projects/whisper-sample",
+      "difficulty": "easy",
+      "gpu": "optional",
+      "size": "medium",
+      "tags": ["音声認識", "文字起こし", "Whisper"]
+    },
+    {
+      "id": "transformers",
+      "name": "Hugging Face Transformers",
+      "category": "nlp-llm",
+      "description": "自然言語処理・LLM・マルチモーダルモデル用の基本環境を導入します。",
+      "script": "tools/install-transformers.ps1",
+      "project": "projects/transformers-sample",
+      "difficulty": "medium",
+      "gpu": "optional",
+      "size": "medium",
+      "tags": ["LLM", "NLP", "Hugging Face"]
+    },
+    {
+      "id": "sam",
+      "name": "Segment Anything Model",
+      "category": "segmentation",
+      "description": "画像中の対象をマスク化するSAM環境を導入します。モデル重みは別途配置します。",
+      "script": "tools/install-sam.ps1",
+      "project": "projects/sam-sample",
+      "difficulty": "medium",
+      "gpu": "recommended",
+      "size": "large",
+      "tags": ["画像認識", "セグメンテーション", "SAM"]
+    },
+    {
+      "id": "diffusers",
+      "name": "Hugging Face Diffusers",
+      "category": "generation",
+      "description": "画像生成・Diffusionモデル向け環境を導入します。GPU推奨です。",
+      "script": "tools/install-diffusers.ps1",
+      "project": "projects/diffusers-sample",
+      "difficulty": "advanced",
+      "gpu": "recommended",
+      "size": "large",
+      "tags": ["画像生成", "Stable Diffusion", "Diffusers"]
+    }
+  ]
+}
