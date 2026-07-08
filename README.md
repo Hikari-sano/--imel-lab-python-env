@@ -7,7 +7,7 @@
 
 # 日本語
 
-## これは何ですか？
+## これは何？
 
 `memil-python-env` は、Windows PCで研究・開発・AI実験を始めるための **ポータブル Python / VS Code / AI 開発環境** です。
 
