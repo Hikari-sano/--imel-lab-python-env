@@ -1,146 +1,179 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
-$Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-$ProjectsDir = Join-Path $Root "projects"
-$InboxDir = Join-Path $ProjectsDir "_inbox"
-$SharedDir = Join-Path $ProjectsDir "_shared"
-$DateStamp = Get-Date -Format "yyyy-MM-dd"
-$TodayInbox = Join-Path $InboxDir $DateStamp
+. "$PSScriptRoot\common-winpython.ps1"
+
+$Root = Get-MemilRoot
+Set-Location $Root
+
 $LogDir = Join-Path $Root "logs"
-$LogPath = Join-Path $LogDir ("organize_" + (Get-Date -Format "yyyyMMdd_HHmmss") + ".txt")
 
-function Ensure-Dir {
-    param([string]$Path)
-    if (-not (Test-Path $Path)) {
-        New-Item -ItemType Directory -Path $Path | Out-Null
+if (-not (Test-Path $LogDir)) {
+    New-Item -ItemType Directory -Path $LogDir | Out-Null
+}
+
+$Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$Today = Get-Date -Format "yyyy-MM-dd"
+$InboxDir = Join-Path $Root "projects\_inbox\$Today"
+$LogFile = Join-Path $LogDir "organize-workspace-$Timestamp.txt"
+
+function Add-Log {
+    param([string]$Text = "")
+
+    Add-Content -Path $LogFile -Value $Text -Encoding UTF8
+}
+
+function Is-ProtectedRootItem {
+    param([System.IO.FileSystemInfo]$Item)
+
+    $protectedNames = @(
+        ".git",
+        ".github",
+        ".vscode",
+        "cache",
+        "catalog",
+        "docs",
+        "legacy",
+        "logs",
+        "projects",
+        "tools",
+        "vscode",
+        "winpython",
+        ".gitignore",
+        "README.md",
+        "LICENSE",
+        "Start.bat",
+        "WINPYTHON_SETUP.bat",
+        "SHARE_ENV_TO_AI.bat",
+        "ORGANIZE_FILES.bat"
+    )
+
+    if ($protectedNames -contains $Item.Name) {
+        return $true
+    }
+
+    if ($Item.Name.StartsWith(".")) {
+        return $true
+    }
+
+    return $false
+}
+
+function Get-OrganizeTargets {
+    $items = Get-ChildItem -Path $Root -Force -ErrorAction SilentlyContinue
+
+    $targets = @()
+
+    foreach ($item in $items) {
+        if (Is-ProtectedRootItem -Item $item) {
+            continue
+        }
+
+        if ($item.PSIsContainer) {
+            continue
+        }
+
+        $targets += $item
+    }
+
+    return $targets
+}
+
+function Show-Targets {
+    param($Targets)
+
+    Write-MemilTitle "Workspace Organizer"
+
+    Write-Host "This tool moves loose files in the repository root to:"
+    Write-Host ""
+    Write-Host "projects\_inbox\$Today"
+    Write-Host ""
+    Write-Host "It does not delete files."
+    Write-Host ""
+
+    if ($Targets.Count -eq 0) {
+        Write-MemilOk "No loose root files found."
+        return
+    }
+
+    Write-Host "Files to move:"
+    Write-Host ""
+
+    foreach ($target in $Targets) {
+        Write-Host " - $($target.Name)"
+    }
+
+    Write-Host ""
+}
+
+"" | Set-Content -Path $LogFile -Encoding UTF8
+
+Add-Log "MEMIL Workspace Organizer"
+Add-Log "Created at: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+Add-Log "Root: $Root"
+Add-Log "Inbox: $InboxDir"
+Add-Log ""
+
+$targets = Get-OrganizeTargets
+
+Show-Targets -Targets $targets
+
+if ($targets.Count -eq 0) {
+    Add-Log "No files to move."
+    Write-Host ""
+    Write-Host "Log file:"
+    Write-Host $LogFile
+    Write-Host ""
+    exit 0
+}
+
+$answer = Read-Host "Move these files? [y/N]"
+
+if ($answer -ne "y" -and $answer -ne "Y") {
+    Write-MemilWarn "Canceled. No files were moved."
+    Add-Log "Canceled by user. No files were moved."
+    Write-Host ""
+    Write-Host "Log file:"
+    Write-Host $LogFile
+    Write-Host ""
+    exit 0
+}
+
+if (-not (Test-Path $InboxDir)) {
+    New-Item -ItemType Directory -Path $InboxDir | Out-Null
+}
+
+Add-Log "Moved files:"
+Add-Log ""
+
+foreach ($target in $targets) {
+    $destination = Join-Path $InboxDir $target.Name
+
+    if (Test-Path $destination) {
+        $baseName = [System.IO.Path]::GetFileNameWithoutExtension($target.Name)
+        $extension = [System.IO.Path]::GetExtension($target.Name)
+        $newName = "$baseName-$Timestamp$extension"
+        $destination = Join-Path $InboxDir $newName
+    }
+
+    try {
+        Move-Item -Path $target.FullName -Destination $destination -Force
+        Write-MemilOk "Moved: $($target.Name)"
+        Add-Log "$($target.FullName) -> $destination"
+    } catch {
+        Write-MemilWarn "Failed to move: $($target.Name)"
+        Add-Log "[ERROR] $($target.FullName)"
+        Add-Log $_.Exception.Message
     }
 }
 
-function Write-Log {
-    param([string]$Message)
-    Write-Host $Message
-    Add-Content -Path $LogPath -Encoding UTF8 -Value $Message
-}
+Write-MemilTitle "Organize complete"
 
-Ensure-Dir $ProjectsDir
-Ensure-Dir $InboxDir
-Ensure-Dir $TodayInbox
-Ensure-Dir $SharedDir
-Ensure-Dir $LogDir
+Write-Host "Moved files to:"
+Write-Host $InboxDir
+Write-Host ""
+Write-Host "Log file:"
+Write-Host $LogFile
+Write-Host ""
 
-# Common research workspace folders
-$folders = @(
-    "_shared\data\raw",
-    "_shared\data\processed",
-    "_shared\outputs",
-    "_shared\notebooks",
-    "_shared\scripts",
-    "_shared\docs",
-    "_shared\figures",
-    "_shared\tables",
-    "_shared\audio",
-    "_shared\video",
-    "_shared\images",
-    "_archive",
-    "_inbox"
-)
-foreach ($f in $folders) {
-    Ensure-Dir (Join-Path $ProjectsDir $f)
-}
-
-Set-Content -Path $LogPath -Encoding UTF8 -Value "Memil file organization log"
-Write-Log "Root: $Root"
-Write-Log "Inbox: $TodayInbox"
-Write-Log ""
-
-# Files/folders that should stay in the repository root
-$ProtectedNames = @(
-    ".git",
-    ".github",
-    ".vscode",
-    "catalog",
-    "docs",
-    "projects",
-    "tools",
-    "vscode",
-    "winpython",
-    "python",
-    "cache",
-    "models",
-    "env_reports",
-    "logs",
-    "README.md",
-    "README_WINPYTHON_MIGRATION.md",
-    "README_FIRST_JA.txt",
-    "README_WINPYTHON_SETUP_SNIPPET.md",
-    "requirements-lab.txt",
-    ".gitignore",
-    "Start.bat",
-    "AI_CATALOG.bat",
-    "SHARE_ENV_TO_AI.bat",
-    "WINPYTHON_SETUP.bat",
-    "ORGANIZE_FILES.bat"
-)
-
-# Extensions likely created or downloaded by users. These are safe to move from root to inbox.
-$MovableExtensions = @(
-    ".csv", ".tsv", ".xlsx", ".xls", ".json", ".yaml", ".yml",
-    ".txt", ".md", ".pdf", ".docx", ".pptx",
-    ".ipynb", ".py", ".R", ".r",
-    ".jpg", ".jpeg", ".png", ".gif", ".webp", ".tif", ".tiff",
-    ".mp4", ".avi", ".mov", ".mkv",
-    ".wav", ".mp3", ".flac",
-    ".zip", ".7z", ".rar"
-)
-
-# Move loose files in repository root into dated inbox.
-$rootItems = Get-ChildItem -Path $Root -Force -File -ErrorAction SilentlyContinue
-foreach ($item in $rootItems) {
-    if ($ProtectedNames -contains $item.Name) { continue }
-    if ($item.Name -like "*.bat" -or $item.Name -like "*.ps1") { continue }
-    if ($MovableExtensions -notcontains $item.Extension) { continue }
-
-    $dest = Join-Path $TodayInbox $item.Name
-    $base = [System.IO.Path]::GetFileNameWithoutExtension($item.Name)
-    $ext = $item.Extension
-    $i = 1
-    while (Test-Path $dest) {
-        $dest = Join-Path $TodayInbox ("$base-$i$ext")
-        $i++
-    }
-    Move-Item -LiteralPath $item.FullName -Destination $dest
-    Write-Log "Moved root file: $($item.Name) -> projects\_inbox\$DateStamp"
-}
-
-# Prepare standard folders inside each user/AI project but do not move files inside projects automatically.
-$projectDirs = Get-ChildItem -Path $ProjectsDir -Directory -ErrorAction SilentlyContinue | Where-Object {
-    $_.Name -notin @("_inbox", "_shared", "_archive")
-}
-foreach ($proj in $projectDirs) {
-    $standard = @("data", "data\raw", "data\processed", "outputs", "notebooks", "scripts", "docs")
-    foreach ($s in $standard) {
-        Ensure-Dir (Join-Path $proj.FullName $s)
-    }
-    $readme = Join-Path $proj.FullName "README_PROJECT.md"
-    if (-not (Test-Path $readme)) {
-        Set-Content -Path $readme -Encoding UTF8 -Value @(
-            "# $($proj.Name)",
-            "",
-            "Suggested folder layout:",
-            "",
-            "```text",
-            "data/raw/        original input data",
-            "data/processed/  cleaned or converted data",
-            "outputs/         generated results",
-            "notebooks/       Jupyter notebooks",
-            "scripts/         Python scripts",
-            "docs/            notes and documentation",
-            "```"
-        )
-        Write-Log "Created project guide: projects\$($proj.Name)\README_PROJECT.md"
-    }
-}
-
-Write-Log ""
-Write-Log "Organization completed."
-Write-Log "Log file: $LogPath"
+Add-Log ""
+Add-Log "Done."
