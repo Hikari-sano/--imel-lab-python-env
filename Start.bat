@@ -47,10 +47,11 @@ pause
 goto main
 
 :preset
-echo.
-echo Recommended setup is not implemented yet.
-echo Please use First setup or AI / Tools catalog for now.
-echo.
+if exist ".\tools\setup-preset.ps1" (
+    powershell -NoProfile -ExecutionPolicy Bypass -File ".\tools\setup-preset.ps1"
+) else (
+    echo tools\setup-preset.ps1 was not found.
+)
 pause
 goto main
 
