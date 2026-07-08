@@ -53,3 +53,5 @@ winpython/
 
 # old uv runtime, if present
 python/
+# Local organization logs
+logs/
