@@ -17,6 +17,17 @@ if errorlevel 1 (
   exit /b 1
 )
 
+echo.
+echo Installing / checking VS Code extensions...
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\tools\install-vscode-extensions.ps1"
+if errorlevel 1 (
+  echo.
+  echo [WARN] VS Code extension setup failed.
+  echo You can still use BAT files, but the VS Code Run button may not appear.
+  echo Please check your internet connection and try Start.bat again later.
+  pause
+)
+
 if exist ".\vscode\Code.exe" (
   start "" ".\vscode\Code.exe" ".\projects"
 ) else (
