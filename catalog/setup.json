@@ -1,0 +1,50 @@
+﻿{
+  "presets": [
+    {
+      "id": "minimal",
+      "name": "最小セット",
+      "description": "Python と VS Code を使い始めるための最小構成です。",
+      "items": [
+        "winpython",
+        "vscode",
+        "vscode-extensions",
+        "hello-python"
+      ]
+    },
+    {
+      "id": "lab-basic",
+      "name": "研究室おすすめセット",
+      "description": "研究・授業・データ分析でよく使う基本環境です。",
+      "items": [
+        "winpython",
+        "vscode",
+        "vscode-extensions",
+        "common-packages",
+        "jupyter-lab"
+      ]
+    },
+    {
+      "id": "vision-ai",
+      "name": "画像AIセット",
+      "description": "画像認識や物体検出を始めるための環境です。",
+      "items": [
+        "winpython",
+        "vscode",
+        "vscode-extensions",
+        "common-packages",
+        "yolo-ultralytics"
+      ]
+    },
+    {
+      "id": "audio-ai",
+      "name": "音声AIセット",
+      "description": "音声認識や文字起こしを始めるための環境です。",
+      "items": [
+        "winpython",
+        "vscode",
+        "vscode-extensions",
+        "whisper"
+      ]
+    }
+  ]
+}

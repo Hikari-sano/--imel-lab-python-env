@@ -55,3 +55,7 @@ winpython/
 python/
 # Local organization logs
 logs/
+
+# Local Python / old backup folders
+python/
+legacy/backup/python-old/
