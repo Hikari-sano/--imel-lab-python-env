@@ -2,15 +2,25 @@
 vscode/
 python/
 cache/
-projects/*/.venv/
+winpython/
 
 # User projects are optional. Keep sample/template files only.
 projects/*
 !projects/.gitkeep
 
-# Logs
+# Project virtual environments
+projects/*/.venv/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Logs and temporary files
 *.log
 *.tmp
+logs/
+env_reports/
 
 # Windows metadata
 Thumbs.db
@@ -19,11 +29,9 @@ Desktop.ini
 # VS Code local workspace files if someone opens the repo itself
 .vscode/*
 !.vscode/settings.example.json
+
 # AI model files and generated outputs
 models/
-
-# Python virtual environments
-
 
 # AI output folders
 projects/*/runs/
@@ -46,16 +54,20 @@ projects/**/*.avi
 projects/**/*.mov
 projects/**/*.wav
 projects/**/*.mp3
-# Environment reports for AI troubleshooting
-env_reports/
-# WinPython runtime, local only
-winpython/
 
-# old uv runtime, if present
-python/
-# Local organization logs
-logs/
+# Node / npm
+node_modules***pm-debug.log*
+yarn-debug.log*
+ya**-error.log*
 
-# Local Python / old backup folders
-python/
-legacy/backup/python-old/
+# Tauri / Rust build**utputs
+src-tauri/target/
+target/
+** Rust temporary files
+**/*.rs.bk
+***Tauri generated package outputs
+***-tauri/gen/
+src-tauri/.tauri/
+
+#***cal Python / old backup folders
+***acy/backup/python-old/
