@@ -1,8 +1,9 @@
 {
   "mode": "preview",
+  "executionMode": "dryRun",
   "backend": "planned-tauri",
   "canExecuteScripts": false,
-  "description": "This GUI prototype only previews future PowerShell script mappings. It does not execute scripts yet.",
+  "description": "This GUI prototype only previews future PowerShell script mappings. The Tauri runner currently supports dry-run validation only.",
   "futureRuntime": "Tauri command bridge",
   "scriptRoot": "tools"
 }
