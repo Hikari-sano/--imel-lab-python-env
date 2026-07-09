@@ -373,10 +373,15 @@ function renderExecutionLog() {
       return `
         <div class="item">
           <h3>${entry.label}</h3>
-          <p><strong>Script:</strong> <code>${entry.script}</code></p>
           <p><strong>Mode:</strong> ${entry.mode}</p>
           <p><strong>Policy:</strong> ${entry.policy}</p>
+          <p><strong>Validation:</strong> ${entry.validationStatus}</p>
+          <p><strong>Exit code:</strong> ${entry.exitCode}</p>
           <p><strong>Bridge:</strong> ${entry.bridge}</p>
+          <p><strong>Stdout:</strong></p>
+          <pre class="output-block">${entry.stdout}</pre>
+          <p><strong>Stderr:</strong></p>
+          <pre class="output-block">${entry.stderr}</pre>
           <p><strong>Time:</strong> ${entry.time}</p>
         </div>
       `;
@@ -442,9 +447,16 @@ async function addExecutionLogEntry(label, script) {
   executionLogEntries.unshift({
     label,
     script,
-    mode: "preview only",
+    mode: payload.mode || "preview",
     policy: payload.allowedByPolicy ? "allowed by policy" : "blocked by policy",
-    bridge: dispatchResult.message,
+    validationStatus: dispatchResult.validationStatus || "static-preview",
+    exitCode:
+      dispatchResult.exitCode === null || dispatchResult.exitCode === undefined
+        ? "not executed"
+        : dispatchResult.exitCode,
+    bridge: dispatchResult.message || "No bridge message returned.",
+    stdout: dispatchResult.stdout || "",
+    stderr: dispatchResult.stderr || "",
     time: now.toLocaleString()
   });
 
