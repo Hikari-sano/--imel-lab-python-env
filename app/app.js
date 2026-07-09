@@ -5,6 +5,29 @@ const appInfo = {
   status: "Static mockup"
 };
 
+const fallbackDataSources = [
+  {
+    title: "catalog/index.json",
+    description: "Stores AI / Tools catalog items such as Jupyter, YOLO, Whisper, and Transformers."
+  },
+  {
+    title: "catalog/setup.json",
+    description: "Stores recommended setup presets such as minimal, lab basic, vision AI, and audio AI."
+  },
+  {
+    title: "catalog/installed.json",
+    description: "Tracks installed tools and project environment status."
+  },
+  {
+    title: "tools PowerShell scripts",
+    description: "Provides the backend scripts that the future GUI should call."
+  },
+  {
+    title: "Project virtual environments",
+    description: "Each AI or tool project should have its own isolated Python environment."
+  }
+];
+
 const fallbackCatalogItems = [
   {
     title: "Common Python packages",
@@ -263,6 +286,12 @@ document.addEventListener("DOMContentLoaded", () => {
     info.textContent =
       `${appInfo.version} | ${appInfo.branch} | ${appInfo.status}`;
   }
+
+  loadJsonList(
+    "./catalog/data-sources.json",
+    fallbackDataSources,
+    "data-sources-list"
+  );
 
   loadStatusCards();
 
