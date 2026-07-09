@@ -51,8 +51,8 @@
 
         <div class="item">
           <h3>Backend plan</h3>
-          <p>Future GUI actions should call existing tools/*.ps1 scripts.</p>
-        </div>
+          <p>Future GUI buttons will call PowerShell scripts in the tools folder.</p>
+
       </div>
     </section>
 
@@ -82,14 +82,14 @@
         </div>
 
         <div class="item">
-          <h3>tools/*.ps1</h3>
+          <h3>tools PowerShell scripts</h3>
           <p>
             Provides the backend scripts that the future GUI should call.
           </p>
         </div>
 
         <div class="item">
-          <h3>projects/&lt;tool&gt;/.venv</h3>
+          <h3>Project virtual environments</h3>
           <p>
             Each AI or tool project should have its own isolated Python environment.
           </p>
@@ -123,12 +123,21 @@
       <h2>Quick Actions</h2>
 
       <div class="actions">
-        <button>First setup</button>
-        <button>Recommended setup</button>
-        <button>AI / Tools catalog</button>
-        <button>Health check</button>
-        <button>Create AI support report</button>
-        <button>WinPython setup guide</button>
+        <button data-script="tools/first-setup.ps1">First setup</button>
+        <button data-script="tools/setup-preset.ps1">Recommended setup</button>
+        <button data-script="tools/show-catalog.ps1">AI / Tools catalog</button>
+        <button data-script="tools/health-check.ps1">Health check</button>
+        <button data-script="tools/share-env-to-ai.ps1">Create AI support report</button>
+        <button data-script="tools/winpython-guide.ps1">WinPython setup guide</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Future Action Mapping</h2>
+
+      <div id="action-preview" class="item">
+        <h3>No action selected</h3>
+        <p>Select a Quick Action button to preview the future PowerShell script mapping.</p>
       </div>
     </section>
 
