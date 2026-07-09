@@ -1,344 +1,343 @@
+﻿# MEMIL Python / AI Environment Catalog
 
-# memil-python-env
+Windows 向けのポータブル Python / VS Code / AI 開発環境カタログです。
 
-**日本語** | [English](#english)
+Python 初心者、研究室配布、学生の AI 実験向けに、WinPython、VS Code、Jupyter、YOLO、Whisper、研究用 Python パッケージなどを `Start.bat` から簡単に導入・確認・整理できるようにしています。
 
----
-
-# 日本語
-
-## これは何？
-
-`memil-python-env` は、Windows PCで研究・開発・AI実験を始めるための **ポータブル Python / VS Code / AI 開発環境** です。
-
-Python、仮想環境、VS Code、AIライブラリの設定に詳しくない人でも使えるように、基本操作は `.bat` ファイルをダブルクリックする形にしています。
-
-この環境の基本方針は次の通りです。
+基本的には、最初に覚えるファイルはこれだけです。
 
 ```text
-WinPythonのみ + AI/ツールごとの専用 .venv
-```
-
-つまり、Python本体は `winpython/` に置いた WinPython を使い、YOLO、Whisper、Jupyter などはそれぞれ別々の `.venv` 環境に入れます。
-
-この構成により、1つのAIライブラリの依存関係が壊れても、他のAI環境へ影響しにくくなります。
-
----
-
-## 最初に覚えるファイル
-
-初心者が主に使うファイルは、この5つです。
-
-```text
-WINPYTHON_SETUP.bat
 Start.bat
-AI_CATALOG.bat
-ORGANIZE_FILES.bat
-SHARE_ENV_TO_AI.bat
 ```
-
-| ファイル | 役割 |
-|---|---|
-| `WINPYTHON_SETUP.bat` | WinPythonのダウンロードページを開き、配置確認をします。 |
-| `Start.bat` | VS Code、基本Pythonプロジェクト、VS Code拡張機能を準備します。 |
-| `AI_CATALOG.bat` | YOLO、Whisper、Transformers、SAM、Diffusers、Jupyter、numpy、FFmpegなどを導入・実行します。 |
-| `ORGANIZE_FILES.bat` | 散らかったファイルを安全に整理します。削除はしません。 |
-| `SHARE_ENV_TO_AI.bat` | エラー時に、AIや担当者へ共有する環境レポートとファイル構造レポートを作ります。 |
 
 ---
 
-## 初心者向け：一番かんたんな導入手順
+## これは何ですか？
 
-### 1. GitHubからZIPをダウンロードする
+このリポジトリは、Windows 上で Python / VS Code / AI 開発環境をできるだけ簡単に使うための環境セットです。
 
-Gitが分からない人は、GitHubの `Download ZIP` を使ってください。
+特徴は以下です。
 
-1. GitHubのリポジトリページを開きます。
-2. 緑色の `Code` ボタンを押します。
-3. `Download ZIP` を押します。
-4. ダウンロードしたZIPを右クリックします。
-5. `すべて展開` を押します。
-6. 展開されたフォルダを開きます。
+- `Start.bat` からすべて操作できます
+- Conda は使いません
+- uv は使いません
+- 基本 Python は WinPython を使います
+- AI やツールごとに専用の `.venv` を作ります
+- YOLO、Jupyter、Whisper、Transformers などをカタログから選べます
+- エラー時に AI へ相談しやすい環境レポートを作れます
+- ルート直下のファイルを整理する機能があります
 
-展開後、次のようなファイルが見えればOKです。
+---
+
+## はじめての人
+
+まず、このファイルをダブルクリックしてください。
 
 ```text
-WINPYTHON_SETUP.bat
 Start.bat
-AI_CATALOG.bat
-ORGANIZE_FILES.bat
-SHARE_ENV_TO_AI.bat
-README.md
-```
-
----
-
-## 2. WinPythonを準備する
-
-この環境では、通常のPythonインストーラー、Conda、uvは使いません。
-Python本体として WinPython を使います。
-
-まず、次をダブルクリックしてください。
-
-```text
-WINPYTHON_SETUP.bat
 ```
 
 メニューが表示されます。
 
 ```text
-1. Open recommended WinPython download page
-2. Open winpython folder
-3. Check WinPython placement
-4. Exit
+1. First setup
+2. Recommended setup
+3. AI / Tools catalog
+4. Open VS Code
+5. Open projects folder
+6. Health check
+7. Create report for AI support
+8. Organize files
+9. WinPython setup guide
+0. Exit
 ```
 
-### 2-1. 推奨WinPythonページを開く
+番号は半角数字で入力してください。
 
-`1` を選ぶと、推奨するWinPythonのダウンロードページが開きます。
+例:
 
 ```text
-https://sourceforge.net/projects/winpython/files/WinPython_3.12/3.12.10.1/
+2
 ```
 
-このページで、初心者は次のどちらかを選んでください。
+---
+
+## 最初にやること
+
+### 1. WinPython を準備する
+
+`Start.bat` を開いて、次を選びます。
 
 ```text
-Winpython64-3.12.10.1dot.exe
+9. WinPython setup guide
 ```
 
-または、ZIPで展開したい場合は：
+WinPython の配置を確認できます。
 
-```text
-Winpython64-3.12.10.1dot.zip
-```
-
-迷った場合は、まず `Winpython64-3.12.10.1dot.exe` を選んでください。
-
-### 2-2. WinPythonを `winpython/` に展開する
-
-WinPythonを展開するときは、この環境フォルダ内の `winpython/` に入れてください。
-
-正しい配置例：
+期待する配置は以下です。
 
 ```text
 memil-python-env/
 └─ winpython/
-   └─ WPy64-3.12.10.1/
-      └─ python/
-         └─ python.exe
-```
-
-フォルダ名は多少違っていても大丈夫です。
-重要なのは、最終的に次の形になっていることです。
-
-```text
-winpython\...\python\python.exe
-```
-
-間違った例：
-
-```text
-winpython/
-└─ Winpython64-3.12.10.1dot.exe
-```
-
-これはまだ展開されていない状態です。
-`exe` を置いただけでは使えません。
-
-間違った例：
-
-```text
-winpython/
-└─ Downloads/
    └─ WPy64-xxxx/
       └─ python/
          └─ python.exe
 ```
 
-このように余計なフォルダが入ると、検出できない場合があります。
-
-### 2-3. WinPythonの配置を確認する
-
-WinPythonを展開したら、もう一度 `WINPYTHON_SETUP.bat` を開いて、`3` を選びます。
+注意:
 
 ```text
-3. Check WinPython placement
+Winpython64-xxxx.exe を winpython フォルダに置くだけでは使えません。
+.exe を実行して展開する必要があります。
 ```
 
-成功すると、次のような表示になります。
+推奨ページ:
 
 ```text
-[OK] WinPython found: ...\winpython\...\python\python.exe
-Python 3.12.x
-WinPython check completed.
+https://sourceforge.net/projects/winpython/files/WinPython_3.12/3.12.10.1/
 ```
 
----
-
-## 3. 基本環境を起動する
-
-WinPythonの確認が終わったら、次をダブルクリックします。
+推奨ファイル:
 
 ```text
-Start.bat
+Winpython64-3.12.10.1dot.exe
 ```
 
-`Start.bat` は次のことを行います。
+または:
 
 ```text
-1. WinPythonを確認する
-2. VS Code ZIP版を準備する
-3. VS Code拡張機能を自動インストールする
-4. projects/hello-python を作る
-5. hello-python 用の .venv を作る
-6. VS Codeを開く
-```
-
-初回はダウンロードや拡張機能の導入があるため、数分かかることがあります。
-黒い画面が出ても、途中で閉じないでください。
-
----
-
-## 4. VS Codeの実行ボタンについて
-
-`Start.bat` は、VS CodeのPython開発に必要な拡張機能を自動で入れるようにしています。
-
-自動で入れる主な拡張機能：
-
-```text
-ms-python.python
-ms-python.vscode-pylance
-ms-python.debugpy
-ms-toolsai.jupyter
-```
-
-Pythonファイルを開いたときに、VS Code右上に実行ボタン `▶` が表示されやすくなります。
-
-ただし、VS Codeは複数のPython環境があると、間違ったPythonを選ぶことがあります。
-そのため、この環境では **各プロジェクトごとに VS Code 設定を自動生成**します。
-
-各プロジェクトには、以下が作られます。
-
-```text
-.vscode/settings.json
-.vscode/launch.json
-OPEN_IN_VSCODE.bat
-```
-
-実行ボタンを使いたい場合は、各プロジェクト内の `OPEN_IN_VSCODE.bat` から開くのがおすすめです。
-
-例：YOLOの場合
-
-```text
-projects/yolo-sample/OPEN_IN_VSCODE.bat
+Winpython64-3.12.10.1dot.zip
 ```
 
 ---
 
-## 5. AIカタログを使う
+### 2. First setup を実行する
 
-AIや研究用ツールを使う場合は、次をダブルクリックします。
+WinPython を展開したら、`Start.bat` を開いて次を選びます。
 
 ```text
-AI_CATALOG.bat
+1. First setup
 ```
 
-メニューが表示されます。
+これにより、基本フォルダや `hello-python` プロジェクトが準備されます。
+
+---
+
+### 3. Recommended setup または AI / Tools catalog を使う
+
+研究・授業・実験でよく使う環境をまとめて準備したい場合は、次を選びます。
 
 ```text
-1. YOLO / Ultralytics
-2. Whisper
-3. Hugging Face Transformers
-4. SAM / Segment Anything
-5. Diffusers
-6. Jupyter / JupyterLab
-7. Common Python packages
-8. FFmpeg
-9. Open projects folder
-10. Exit
+2. Recommended setup
+```
+
+個別に AI ツールを選びたい場合は、次を選びます。
+
+```text
+3. AI / Tools catalog
 ```
 
 ---
 
-## 6. YOLOを試す
+## Start.bat のメニュー
 
-最初の動作確認には YOLO がおすすめです。
+### 1. First setup
 
-### YOLOを導入する
+基本環境を準備します。
 
-1. `AI_CATALOG.bat` を開きます。
-2. `1. YOLO / Ultralytics` を選びます。
-3. `1. Install / Update` を選びます。
-4. インストールが終わるまで待ちます。
+主に以下を確認・作成します。
 
-YOLO用の環境は次に作られます。
+- 基本フォルダ
+- WinPython の検出
+- `projects/hello-python`
+- `.venv`
+- VS Code 用設定
+- `OPEN_IN_VSCODE.bat`
+
+---
+
+### 2. Recommended setup
+
+目的別のおすすめセットアップを選べます。
+
+現在のプリセット:
 
 ```text
-projects/yolo-sample/
+1. 最小セット
+2. 研究室おすすめセット
+3. 画像AIセット
+4. 音声AIセット
 ```
 
-### YOLOを実行する
-
-一番簡単な方法：
+プリセット情報は以下で管理しています。
 
 ```text
-projects/yolo-sample/RUN_YOLO.bat
-```
-
-VS Codeの実行ボタンを使いたい場合：
-
-```text
-projects/yolo-sample/OPEN_IN_VSCODE.bat
-```
-
-を開いて、`main.py` を表示し、右上の `▶` を押します。
-
-成功すると、次の画像が作られます。
-
-```text
-projects/yolo-sample/yolo_result.jpg
+catalog/setup.json
 ```
 
 ---
 
-## 7. Jupyterを使う
+### 3. AI / Tools catalog
 
-JupyterLabを使う場合は、`AI_CATALOG.bat` で以下を選びます。
+AI や研究用ツールを目的から選べます。
+
+例:
 
 ```text
-6. Jupyter / JupyterLab
+研究・データ分析の基本パッケージを入れたい
+ノートブックで実験したい
+画像の中の物体を検出したい
+音声を文字起こししたい
+文章AI・自然言語処理を試したい
 ```
 
-導入：
+カタログ情報は以下で管理しています。
 
 ```text
-1. Install / Update
-```
-
-起動：
-
-```text
-2. Start JupyterLab
-```
-
-ノートブック用フォルダ：
-
-```text
-projects/jupyter-sample/notebooks/
+catalog/index.json
 ```
 
 ---
 
-## 8. numpyなどの基本パッケージを入れる
+### 4. Open VS Code
 
-`numpy`、`pandas`、`matplotlib` などをまとめて入れたい場合は、`AI_CATALOG.bat` で以下を選びます。
+ポータブル VS Code を開きます。
+
+期待する配置:
 
 ```text
-7. Common Python packages
+vscode/
+└─ Code.exe
 ```
 
-導入される主なパッケージ：
+---
+
+### 5. Open projects folder
+
+作業用フォルダを開きます。
+
+```text
+projects/
+```
+
+---
+
+### 6. Health check
+
+環境チェックを行います。
+
+確認内容の例:
+
+- 基本フォルダがあるか
+- WinPython があるか
+- VS Code があるか
+- カタログファイルがあるか
+- 各プロジェクトに `.venv` があるか
+- `OPEN_IN_VSCODE.bat` があるか
+
+ログは以下に保存されます。
+
+```text
+logs/
+```
+
+---
+
+### 7. Create report for AI support
+
+AI や研究室担当者に相談するための環境レポートを作ります。
+
+出力先:
+
+```text
+logs/ai-support-report-YYYYMMDD-HHMMSS.txt
+```
+
+このレポートには、以下のような情報が含まれます。
+
+- OS 情報
+- PowerShell 情報
+- フォルダ構成
+- WinPython 検出結果
+- VS Code 検出結果
+- カタログ情報
+- プロジェクト一覧
+- `.venv` の有無
+- pip パッケージ一覧
+- Git 状態
+
+エラーが出たときは、まずこのメニューを使ってください。
+
+```text
+Start.bat -> 7. Create report for AI support
+```
+
+---
+
+### 8. Organize files
+
+ルート直下に置かれた作業ファイルを整理します。
+
+移動先:
+
+```text
+projects/_inbox/YYYY-MM-DD/
+```
+
+削除はしません。
+
+整理ログは以下に保存されます。
+
+```text
+logs/
+```
+
+---
+
+### 9. WinPython setup guide
+
+WinPython の導入状況を確認します。
+
+できること:
+
+- WinPython が見つかるか確認
+- `winpython/` フォルダを開く
+- ダウンロードページを開く
+- `.exe` や `.zip` が置かれているだけで未展開の場合に案内する
+
+---
+
+## AI / Tools catalog の内容
+
+現在の主なカタログ項目です。
+
+```text
+Common Python packages
+Jupyter / JupyterLab
+YOLO / Ultralytics
+Whisper
+Hugging Face Transformers
+```
+
+それぞれのツールは、原則として専用の `.venv` に入ります。
+
+例:
+
+```text
+projects/yolo-sample/.venv/
+projects/jupyter-sample/.venv/
+projects/common-python/.venv/
+```
+
+これにより、1つの環境が壊れても他の環境へ影響しにくくなります。
+
+---
+
+## Common Python packages
+
+研究やデータ分析でよく使う基本パッケージです。
+
+主な内容:
 
 ```text
 numpy
@@ -355,401 +354,251 @@ tqdm
 seaborn
 ```
 
-導入後は、次のフォルダが使えます。
-
-```text
-projects/common-python-sample/
-```
-
 ---
 
-## 9. WhisperとFFmpeg
+## VS Code の実行ボタンについて
 
-Whisperは音声ファイルの文字起こしに使います。
+VS Code の右上の実行ボタンを使うと、別の Python が選ばれてしまうことがあります。
 
-```text
-2. Whisper
-```
-
-音声や動画を扱う場合、FFmpegが必要になることがあります。
-FFmpegは `AI_CATALOG.bat` から導入できます。
+その場合、次のようなエラーが出ることがあります。
 
 ```text
-8. FFmpeg
+ModuleNotFoundError
 ```
 
----
-
-## 10. ファイル整理をする
-
-ファイル整理が苦手な人は、次をダブルクリックしてください。
+各プロジェクトを VS Code で開くときは、プロジェクト内の以下を使うのが安全です。
 
 ```text
-ORGANIZE_FILES.bat
+OPEN_IN_VSCODE.bat
 ```
 
-このファイルは、研究用フォルダを自動で作り、ルート直下に置かれたファイルを安全に整理します。
-ファイルは削除しません。
-
-作られる主なフォルダ：
-
-```text
-projects/
-├─ _inbox/
-├─ _shared/
-│  ├─ data/
-│  │  ├─ raw/
-│  │  └─ processed/
-│  ├─ outputs/
-│  ├─ notebooks/
-│  ├─ scripts/
-│  ├─ docs/
-│  ├─ figures/
-│  ├─ tables/
-│  ├─ audio/
-│  ├─ video/
-│  └─ images/
-└─ _archive/
-```
-
-ルート直下に置かれたCSV、画像、PDF、ノートブック、音声ファイルなどは、以下に移動されます。
-
-```text
-projects/_inbox/YYYY-MM-DD/
-```
-
-重要な環境フォルダやスクリプトは動かしません。
-
----
-
-## 11. エラーが出たとき
-
-エラーが出ても、黒い画面をすぐ閉じないでください。
-
-次をダブルクリックします。
-
-```text
-SHARE_ENV_TO_AI.bat
-```
-
-すると、次のフォルダにレポートが作られます。
-
-```text
-env_reports/
-```
-
-作られるファイル：
-
-```text
-AI_prompt_日時.txt
-env_report_日時.txt
-file_tree_日時.txt
-```
-
-AIや担当者に相談するときは、まず `AI_prompt_日時.txt` を開き、困っている内容を書き足してください。
-必要に応じて、`env_report_日時.txt` と `file_tree_日時.txt` も共有してください。
-
-注意：
-
-```text
-APIキー、パスワード、研究データの中身は共有しないでください。
-```
-
----
-
-## 12. GitHubに上げないもの
-
-以下はPC上で自動生成されるものなので、GitHubには上げません。
-
-```text
-winpython/
-vscode/
-python/
-cache/
-models/
-env_reports/
-logs/
-projects/*/.venv/
-projects/**/runs/
-*.pt
-*.pth
-*.onnx
-*.safetensors
-*.ckpt
-*.bin
-```
-
----
-
-## 13. よくある質問
-
-### Condaは使っていますか？
-
-使っていません。
-
-```text
-Conda: 使わない
-uv: 使わない
-WinPython: 使う
-```
-
-### 普通のPythonをPCにインストールする必要はありますか？
-
-必要ありません。
-WinPythonを `winpython/` に展開して使います。
-
-### VS Codeの実行ボタンが違うPythonを使います
-
-対象プロジェクトの `OPEN_IN_VSCODE.bat` から開いてください。
-
-例：
+例:
 
 ```text
 projects/yolo-sample/OPEN_IN_VSCODE.bat
 ```
 
-### YOLOで `ModuleNotFoundError: No module named 'ultralytics'` が出ます
+この方法で開くと、そのプロジェクト用の `.venv` が使われやすくなります。
 
-別のPythonで実行している可能性が高いです。
-YOLOの場合、正しいPythonは次です。
+---
 
-```text
-projects/yolo-sample/.venv/Scripts/python.exe
-```
+## フォルダ構成
 
-簡単に実行する場合は、これを使ってください。
+主な構成は以下です。
 
 ```text
-projects/yolo-sample/RUN_YOLO.bat
+memil-python-env/
+├─ Start.bat
+├─ README.md
+├─ catalog/
+│  ├─ index.json
+│  ├─ setup.json
+│  └─ installed.json
+├─ tools/
+│  ├─ common-winpython.ps1
+│  ├─ first-setup.ps1
+│  ├─ health-check.ps1
+│  ├─ install-tool.ps1
+│  ├─ organize-workspace.ps1
+│  ├─ setup-preset.ps1
+│  ├─ share-env-to-ai.ps1
+│  ├─ show-catalog.ps1
+│  └─ winpython-guide.ps1
+├─ projects/
+├─ winpython/
+├─ vscode/
+├─ logs/
+├─ cache/
+├─ docs/
+└─ legacy/
 ```
 
 ---
 
-# English
+## catalog について
 
-## What is this?
-
-`memil-python-env` is a portable Python / VS Code / AI development environment for Windows.
-
-It is designed so that beginners can set up and use Python, VS Code, and AI tools mostly by double-clicking `.bat` files.
-
-This environment uses:
+`catalog/` には、カタログデータを置きます。
 
 ```text
-WinPython only + one .venv per AI/tool project
+catalog/index.json
 ```
 
-It does not use Conda or uv.
+AI / Tools catalog のツール一覧です。
+
+```text
+catalog/setup.json
+```
+
+Recommended setup のプリセット一覧です。
+
+```text
+catalog/installed.json
+```
+
+インストール済み状態を記録するためのファイルです。
 
 ---
 
-## Main entry files
+## tools について
+
+`tools/` には、実際の処理を行う PowerShell スクリプトを置きます。
+
+主なファイル:
 
 ```text
-WINPYTHON_SETUP.bat
-Start.bat
-AI_CATALOG.bat
-ORGANIZE_FILES.bat
-SHARE_ENV_TO_AI.bat
+tools/common-winpython.ps1
+tools/first-setup.ps1
+tools/show-catalog.ps1
+tools/install-tool.ps1
+tools/setup-preset.ps1
+tools/health-check.ps1
+tools/share-env-to-ai.ps1
+tools/organize-workspace.ps1
+tools/winpython-guide.ps1
 ```
-
-| File | Purpose |
-|---|---|
-| `WINPYTHON_SETUP.bat` | Opens the recommended WinPython download page and checks placement. |
-| `Start.bat` | Sets up VS Code, basic Python project, and VS Code extensions. |
-| `AI_CATALOG.bat` | Installs and runs YOLO, Whisper, Jupyter, numpy, FFmpeg, and other tools. |
-| `ORGANIZE_FILES.bat` | Safely organizes loose files. It does not delete files. |
-| `SHARE_ENV_TO_AI.bat` | Creates environment and file tree reports for troubleshooting. |
 
 ---
 
-## Beginner setup
+## legacy について
 
-### 1. Download this repository
+`legacy/` には、v1 以前の古い入口ファイルやスクリプトを退避しています。
 
-If you do not know Git, use GitHub `Download ZIP`.
-
-### 2. Set up WinPython
-
-Double-click:
+通常は使いません。
 
 ```text
-WINPYTHON_SETUP.bat
+legacy/entrypoints/
+legacy/tools/
+legacy/docs/
 ```
 
-Choose:
+古い `.bat` はここにあります。
 
 ```text
-1. Open recommended WinPython download page
+legacy/entrypoints/AI_CATALOG.bat
+legacy/entrypoints/ORGANIZE_FILES.bat
+legacy/entrypoints/SHARE_ENV_TO_AI.bat
+legacy/entrypoints/WINPYTHON_SETUP.bat
 ```
 
-Recommended page:
+v2 では、基本的に `Start.bat` を使ってください。
+
+---
+
+## GitHub に上げないもの
+
+以下は基本的に GitHub に上げません。
 
 ```text
-https://sourceforge.net/projects/winpython/files/WinPython_3.12/3.12.10.1/
+winpython/
+vscode/
+projects/*/.venv/
+logs/
+cache/
+python/
+legacy/backup/python-old/
 ```
 
-Recommended file:
+理由:
+
+- ファイルサイズが大きい
+- 環境依存
+- 自動生成される
+- 個人の環境情報を含む可能性がある
+
+---
+
+## よくあるトラブル
+
+### Start.bat が PowerShell から実行できない
+
+PowerShell では、現在のフォルダにあるファイルを実行するときに `.\` が必要です。
+
+```powershell
+.\Start.bat
+```
+
+---
+
+### WinPython が見つからない
+
+`Start.bat` を開いて、次を選んでください。
+
+```text
+9. WinPython setup guide
+```
+
+期待する配置:
+
+```text
+winpython/
+└─ WPy64-xxxx/
+   └─ python/
+      └─ python.exe
+```
+
+---
+
+### `.exe` を置いたのに認識されない
+
+`.exe` を置くだけではまだ使えません。
 
 ```text
 Winpython64-3.12.10.1dot.exe
 ```
 
-ZIP version is also OK:
-
-```text
-Winpython64-3.12.10.1dot.zip
-```
-
-Expected layout:
-
-```text
-memil-python-env/
-└─ winpython/
-   └─ WPy64-xxxx/
-      └─ python/
-         └─ python.exe
-```
-
-After extraction, run `WINPYTHON_SETUP.bat` again and choose:
-
-```text
-3. Check WinPython placement
-```
-
-### 3. Start the environment
-
-Double-click:
-
-```text
-Start.bat
-```
-
-This checks WinPython, prepares VS Code, installs VS Code extensions, creates `projects/hello-python`, and opens VS Code.
-
-### 4. Open the AI catalog
-
-Double-click:
-
-```text
-AI_CATALOG.bat
-```
-
-Menu:
-
-```text
-1. YOLO / Ultralytics
-2. Whisper
-3. Hugging Face Transformers
-4. SAM / Segment Anything
-5. Diffusers
-6. Jupyter / JupyterLab
-7. Common Python packages
-8. FFmpeg
-9. Open projects folder
-10. Exit
-```
+を実行して展開してください。
 
 ---
 
-## Run button in VS Code
+### VS Code で ModuleNotFoundError が出る
 
-Each generated project includes:
+VS Code が別の Python を使っている可能性があります。
+
+プロジェクト内の以下から開いてください。
 
 ```text
-.vscode/settings.json
-.vscode/launch.json
 OPEN_IN_VSCODE.bat
 ```
 
-To use the VS Code Run button safely, open the project using:
+---
+
+### エラーを AI に相談したい
+
+次を実行してください。
 
 ```text
-projects/<project-name>/OPEN_IN_VSCODE.bat
+Start.bat -> 7. Create report for AI support
 ```
 
-Example:
+作成されたレポートを AI に貼り付けてください。
+
+---
+
+## 開発方針
+*このリ*ジトリは、以下の方針で整理しています。
 
 ```text
-projects/yolo-sample/OPEN_IN_VSCODE.bat
+WinPy*hon only
+No Conda
+No uv
+One .*env per AI*tool project
+Start.bat as the single entry point
+catalog/*.json as catalog data
+tools/*.ps1 as implementation
 ```
 
 ---
 
-## Recommended first test: YOLO
+#* 現在のブランチ
 
-1. Open `AI_CATALOG.bat`.
-2. Select `1. YOLO / Ultralytics`.
-3. Select `1. Install / Update`.
-4. Wait until installation completes.
-5. Select `2. Run sample` or run:
+v2*再設計は以下のブランチで進めています。
 
 ```text
-projects/yolo-sample/RUN_YOLO.bat
+*2-catalog-redesign
 ```
 
-If successful, this file is created:
+*--
 
-```text
-projects/yolo-sample/yolo_result.jpg
-```
+## ライセンス
 
----
-
-## File organization
-
-If files become messy, double-click:
-
-```text
-ORGANIZE_FILES.bat
-```
-
-Loose user files in the root folder are moved into:
-
-```text
-projects/_inbox/YYYY-MM-DD/
-```
-
-No files are deleted.
-
----
-
-## Troubleshooting
-
-If an error occurs, double-click:
-
-```text
-SHARE_ENV_TO_AI.bat
-```
-
-It creates:
-
-```text
-AI_prompt_timestamp.txt
-env_report_timestamp.txt
-file_tree_timestamp.txt
-```
-
-Share these files with AI or a support person if needed.
-
----
-
-## Files not committed to GitHub
-
-```text
-winpython/
-vscode/
-python/
-cache/
-models/
-env_reports/
-logs/
-projects/*/.venv/
-projects/**/runs/
-*.pt
-*.pth
-*.onnx
-*.safetensors
-*.ckpt
-*.bin
-```
+このリ*ジトリのライセンスは、リポジ*リ内のライセンスファイルを*認*てください。
