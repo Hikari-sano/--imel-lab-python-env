@@ -48,6 +48,15 @@ fn normalize_script_path(script: &str) -> String {
     }
 }
 
+fn validate_runner_mode(mode: &str) -> Result<(), String> {
+    match mode {
+        "dryRun" => Ok(()),
+        "preview" => Ok(()),
+        "execute" => Err("Execute mode is locked. PowerShell execution is not enabled yet.".to_string()),
+        other => Err(format!("Unsupported execution mode: {}", other)),
+    }
+}
+
 fn validate_script_path(script: &str) -> Result<String, String> {
     let normalized = normalize_script_path(script);
 
@@ -90,6 +99,21 @@ fn validate_script_path(script: &str) -> Result<String, String> {
 fn run_script(payload: CommandPayload) -> Result<CommandResult, String> {
     if payload.command != "run_script" {
         return Err(format!("Unsupported command: {}", payload.command));
+    }
+
+    if let Err(reason) = validate_runner_mode(&payload.mode) {
+        return Ok(CommandResult {
+            ok: false,
+            executed: false,
+            command: payload.command,
+            label: payload.label,
+            script: payload.script,
+            normalized_script: "".to_string(),
+            allowed_by_policy: payload.allowed_by_policy,
+            mode: payload.mode,
+            runner: payload.runner,
+            message: format!("Blocked by runner mode lock. {}", reason),
+        });
     }
 
     let normalized_script = match validate_script_path(&payload.script) {
@@ -135,7 +159,7 @@ fn run_script(payload: CommandPayload) -> Result<CommandResult, String> {
         allowed_by_policy: payload.allowed_by_policy,
         mode: payload.mode,
         runner: payload.runner,
-        message: "Dry-run successful. Rust validator approved this script. PowerShell execution is not enabled yet.".to_string(),
+        message: "Dry-run mode approved. Rust validator approved this script. PowerShell execution is not enabled yet.".to_string(),
     })
 }
 
