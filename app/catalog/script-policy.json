@@ -1,0 +1,52 @@
+{
+  "mode": "allowlist",
+  "canExecuteScripts": false,
+  "description": "Only scripts listed in this policy should be executable when the future Tauri bridge is implemented.",
+  "allowedScripts": [
+    {
+      "label": "First setup",
+      "script": "tools/first-setup.ps1",
+      "enabled": true
+    },
+    {
+      "label": "VS Code setup",
+      "script": "tools/install-vscode.ps1",
+      "enabled": true
+    },
+    {
+      "label": "Recommended setup",
+      "script": "tools/setup-preset.ps1",
+      "enabled": true
+    },
+    {
+      "label": "AI / Tools catalog",
+      "script": "tools/show-catalog.ps1",
+      "enabled": true
+    },
+    {
+      "label": "Health check",
+      "script": "tools/health-check.ps1",
+      "enabled": true
+    },
+    {
+      "label": "Create AI support report",
+      "script": "tools/share-env-to-ai.ps1",
+      "enabled": true
+    },
+    {
+      "label": "WinPython setup guide",
+      "script": "tools/winpython-guide.ps1",
+      "enabled": true
+    },
+    {
+      "label": "SAM setup",
+      "script": "tools/setup-sam.ps1",
+      "enabled": true
+    },
+    {
+      "label": "Run SAM sample",
+      "script": "tools/run-sam-sample.ps1",
+      "enabled": true
+    }
+  ]
+}
