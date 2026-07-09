@@ -1,0 +1,8 @@
+{
+  "mode": "preview",
+  "backend": "planned-tauri",
+  "canExecuteScripts": false,
+  "description": "This GUI prototype only previews future PowerShell script mappings. It does not execute scripts yet.",
+  "futureRuntime": "Tauri command bridge",
+  "scriptRoot": "tools"
+}

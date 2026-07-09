@@ -136,6 +136,15 @@ const fallbackStatusCards = [
   }
 ];
 
+const fallbackRunnerStatus = {
+  mode: "preview",
+  backend: "planned-tauri",
+  canExecuteScripts: false,
+  description: "This GUI prototype only previews future PowerShell script mappings. It does not execute scripts yet.",
+  futureRuntime: "Tauri command bridge",
+  scriptRoot: "tools"
+};
+
 function renderItems(containerId, items) {
   const container = document.getElementById(containerId);
 
@@ -211,6 +220,26 @@ function renderActions(actions) {
   setupActionPreview();
 }
 
+function renderRunnerStatus(status) {
+  const container = document.getElementById("runner-status");
+
+  if (!container) {
+    return;
+  }
+
+  const executionText = status.canExecuteScripts
+    ? "Enabled"
+    : "Disabled in this prototype";
+
+  container.innerHTML = `
+    <h3>Script execution: ${executionText}</h3>
+    <p>${status.description}</p>
+    <p><strong>Backend:</strong> ${status.backend}</p>
+    <p><strong>Future runtime:</strong> ${status.futureRuntime}</p>
+    <p><strong>Script root:</strong> ${status.scriptRoot}</p>
+  `;
+}
+
 async function loadJsonList(path, fallbackItems, containerId) {
   try {
     const response = await fetch(path);
@@ -271,6 +300,26 @@ async function loadActions() {
   }
 }
 
+async function loadRunnerStatus() {
+  try {
+    const response = await fetch("./catalog/runner.json");
+
+    if (!response.ok) {
+      throw new Error(`Failed to load runner status: ${response.status}`);
+    }
+
+    const status = await response.json();
+
+    renderRunnerStatus(status);
+
+    console.log("Loaded: ./catalog/runner.json");
+  } catch (error) {
+    console.warn("Runner status loading failed. Using fallback data.", error);
+
+    renderRunnerStatus(fallbackRunnerStatus);
+  }
+}
+
 function setupActionPreview() {
   const preview = document.getElementById("action-preview");
 
@@ -324,6 +373,8 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   loadActions();
+
+  loadRunnerStatus();
 
   console.log(appInfo);
 });
