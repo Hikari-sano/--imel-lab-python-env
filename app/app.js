@@ -47,6 +47,33 @@ const fallbackSetupItems = [
   }
 ];
 
+const fallbackActions = [
+  {
+    label: "First setup",
+    script: "tools/first-setup.ps1"
+  },
+  {
+    label: "Recommended setup",
+    script: "tools/setup-preset.ps1"
+  },
+  {
+    label: "AI / Tools catalog",
+    script: "tools/show-catalog.ps1"
+  },
+  {
+    label: "Health check",
+    script: "tools/health-check.ps1"
+  },
+  {
+    label: "Create AI support report",
+    script: "tools/share-env-to-ai.ps1"
+  },
+  {
+    label: "WinPython setup guide",
+    script: "tools/winpython-guide.ps1"
+  }
+];
+
 function renderItems(containerId, items) {
   const container = document.getElementById(containerId);
 
@@ -69,6 +96,27 @@ function renderItems(containerId, items) {
   });
 }
 
+function renderActions(actions) {
+  const container = document.getElementById("actions-list");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = "";
+
+  actions.forEach((action) => {
+    const button = document.createElement("button");
+
+    button.textContent = action.label;
+    button.setAttribute("data-script", action.script);
+
+    container.appendChild(button);
+  });
+
+  setupActionPreview();
+}
+
 async function loadJsonList(path, fallbackItems, containerId) {
   try {
     const response = await fetch(path);
@@ -78,12 +126,34 @@ async function loadJsonList(path, fallbackItems, containerId) {
     }
 
     const items = await response.json();
+
     renderItems(containerId, items);
 
     console.log(`Loaded: ${path}`);
   } catch (error) {
     console.warn(`JSON loading failed: ${path}. Using fallback data.`, error);
+
     renderItems(containerId, fallbackItems);
+  }
+}
+
+async function loadActions() {
+  try {
+    const response = await fetch("./catalog/actions.json");
+
+    if (!response.ok) {
+      throw new Error(`Failed to load actions: ${response.status}`);
+    }
+
+    const actions = await response.json();
+
+    renderActions(actions);
+
+    console.log("Loaded: ./catalog/actions.json");
+  } catch (error) {
+    console.warn("Actions JSON loading failed. Using fallback data.", error);
+
+    renderActions(fallbackActions);
   }
 }
 
@@ -91,16 +161,10 @@ function setupActionPreview() {
   const preview = document.getElementById("action-preview");
 
   if (!preview) {
-    console.warn("Action preview element was not found.");
     return;
   }
 
   const buttons = document.querySelectorAll("[data-script]");
-
-  if (buttons.length === 0) {
-    console.warn("No action buttons with data-script were found.");
-    return;
-  }
 
   buttons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -137,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "setup-list"
   );
 
-  setupActionPreview();
+  loadActions();
 
   console.log(appInfo);
 });

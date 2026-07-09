@@ -1,0 +1,26 @@
+[
+  {
+    "label": "First setup",
+    "script": "tools/first-setup.ps1"
+  },
+  {
+    "label": "Recommended setup",
+    "script": "tools/setup-preset.ps1"
+  },
+  {
+    "label": "AI / Tools catalog",
+    "script": "tools/show-catalog.ps1"
+  },
+  {
+    "label": "Health check",
+    "script": "tools/health-check.ps1"
+  },
+  {
+    "label": "Create AI support report",
+    "script": "tools/share-env-to-ai.ps1"
+  },
+  {
+    "label": "WinPython setup guide",
+    "script": "tools/winpython-guide.ps1"
+  }
+]
