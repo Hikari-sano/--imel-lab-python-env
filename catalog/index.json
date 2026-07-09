@@ -1,90 +1,101 @@
 ﻿[
-  {
-    "id": "common-packages",
-    "name": "Common Python packages",
-    "purpose": "研究・データ分析の基本パッケージを入れたい",
-    "category": "Basic",
-    "description": "numpy, pandas, matplotlib, scipy, scikit-learn, pillow, opencv-python, jupyter, ipykernel, openpyxl, tqdm, seaborn を導入します。",
-    "projectDir": "projects/common-python",
-    "packages": [
-      "numpy",
-      "pandas",
-      "matplotlib",
-      "scipy",
-      "scikit-learn",
-      "pillow",
-      "opencv-python",
-      "jupyter",
-      "ipykernel",
-      "openpyxl",
-      "tqdm",
-      "seaborn"
-    ],
-    "difficulty": "beginner",
-    "recommended": true,
-    "installType": "pip"
-  },
-  {
-    "id": "jupyter-lab",
-    "name": "Jupyter / JupyterLab",
-    "purpose": "ノートブックで実験したい",
-    "category": "Notebook",
-    "description": "研究ノート、実験、データ分析に使う JupyterLab 環境を作ります。",
-    "projectDir": "projects/jupyter-sample",
-    "packages": [
-      "jupyterlab",
-      "ipykernel",
-      "numpy",
-      "pandas",
-      "matplotlib"
-    ],
-    "difficulty": "beginner",
-    "recommended": true,
-    "installType": "pip"
-  },
-  {
-    "id": "yolo-ultralytics",
-    "name": "YOLO / Ultralytics",
-    "purpose": "画像の中の物体を検出したい",
-    "category": "Computer Vision",
-    "description": "画像内の人、車、物体などを検出する AI 環境を作ります。",
-    "projectDir": "projects/yolo-sample",
-    "packages": [
-      "ultralytics"
-    ],
-    "difficulty": "beginner",
-    "recommended": true,
-    "installType": "pip"
-  },
-  {
-    "id": "whisper",
-    "name": "Whisper",
-    "purpose": "音声を文字起こししたい",
-    "category": "Audio AI",
-    "description": "音声ファイルを文字起こしする AI 環境を作ります。FFmpeg が必要になる場合があります。",
-    "projectDir": "projects/whisper-sample",
-    "packages": [
-      "openai-whisper"
-    ],
-    "difficulty": "intermediate",
-    "recommended": false,
-    "installType": "pip"
-  },
-  {
-    "id": "transformers",
-    "name": "Hugging Face Transformers",
-    "purpose": "文章AI・自然言語処理を試したい",
-    "category": "Text AI",
-    "description": "文章分類、生成、埋め込みなどを試すための Transformers 環境を作ります。",
-    "projectDir": "projects/transformers-sample",
-    "packages": [
-      "transformers",
-      "torch",
-      "sentencepiece",
-      "accelerate"
-    ],
-    "difficulty": "intermediate",
-    "recommended": false,
-    "installType": "pip"
-  }
+    {
+        "id":  "common-packages",
+        "name":  "Common Python packages",
+        "purpose":  "研究・データ分析の基本パッケージを入れたい",
+        "category":  "Basic",
+        "description":  "numpy, pandas, matplotlib, scipy, scikit-learn, pillow, opencv-python, jupyter, ipykernel, openpyxl, tqdm, seaborn を導入します。",
+        "projectDir":  "projects/common-python",
+        "packages":  [
+                         "numpy",
+                         "pandas",
+                         "matplotlib",
+                         "scipy",
+                         "scikit-learn",
+                         "pillow",
+                         "opencv-python",
+                         "jupyter",
+                         "ipykernel",
+                         "openpyxl",
+                         "tqdm",
+                         "seaborn"
+                     ],
+        "difficulty":  "beginner",
+        "recommended":  true,
+        "installType":  "pip"
+    },
+    {
+        "id":  "jupyter-lab",
+        "name":  "Jupyter / JupyterLab",
+        "purpose":  "ノートブックで実験したい",
+        "category":  "Notebook",
+        "description":  "研究ノート、実験、データ分析に使う JupyterLab 環境を作ります。",
+        "projectDir":  "projects/jupyter-sample",
+        "packages":  [
+                         "jupyterlab",
+                         "ipykernel",
+                         "numpy",
+                         "pandas",
+                         "matplotlib"
+                     ],
+        "difficulty":  "beginner",
+        "recommended":  true,
+        "installType":  "pip"
+    },
+    {
+        "id":  "yolo-ultralytics",
+        "name":  "YOLO / Ultralytics",
+        "purpose":  "画像の中の物体を検出したい",
+        "category":  "Computer Vision",
+        "description":  "画像内の人、車、物体などを検出する AI 環境を作ります。",
+        "projectDir":  "projects/yolo-sample",
+        "packages":  [
+                         "ultralytics"
+                     ],
+        "difficulty":  "beginner",
+        "recommended":  true,
+        "installType":  "pip"
+    },
+    {
+        "id":  "whisper",
+        "name":  "Whisper",
+        "purpose":  "音声を文字起こししたい",
+        "category":  "Audio AI",
+        "description":  "音声ファイルを文字起こしする AI 環境を作ります。FFmpeg が必要になる場合があります。",
+        "projectDir":  "projects/whisper-sample",
+        "packages":  [
+                         "openai-whisper"
+                     ],
+        "difficulty":  "intermediate",
+        "recommended":  false,
+        "installType":  "pip"
+    },
+    {
+        "id":  "transformers",
+        "name":  "Hugging Face Transformers",
+        "purpose":  "文章AI・自然言語処理を試したい",
+        "category":  "Text AI",
+        "description":  "文章分類、生成、埋め込みなどを試すための Transformers 環境を作ります。",
+        "projectDir":  "projects/transformers-sample",
+        "packages":  [
+                         "transformers",
+                         "torch",
+                         "sentencepiece",
+                         "accelerate"
+                     ],
+        "difficulty":  "intermediate",
+        "recommended":  false,
+        "installType":  "pip"
+    },
+    {
+        "id":  "sam-segment-anything",
+        "name":  "SAM / Segment Anything",
+        "purpose":  "画像の中の領域を自動で分割したい",
+        "category":  "Computer Vision",
+        "description":  "Meta Segment Anything Model sample environment. Uses a vit_b checkpoint and creates a sample segmentation result.",
+        "project":  "projects/sam-sample",
+        "setupScript":  "tools/setup-sam.ps1",
+        "runScript":  "tools/run-sam-sample.ps1",
+        "recommended":  false
+    }
 ]
