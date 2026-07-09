@@ -8,7 +8,7 @@ const appInfo = {
 const fallbackDataSources = [
   {
     title: "catalog/index.json",
-    description: "Stores AI / Tools catalog items such as Jupyter, YOLO, Whisper, and Transformers."
+    description: "Stores AI / Tools catalog items such as Jupyter, YOLO, Whisper, Transformers, and SAM."
   },
   {
     title: "catalog/setup.json",
@@ -48,6 +48,10 @@ const fallbackCatalogItems = [
   {
     title: "Hugging Face Transformers",
     description: "Try text AI and natural language processing."
+  },
+  {
+    title: "SAM / Segment Anything",
+    description: "Segment objects and regions in images using Meta Segment Anything. Experimental support."
   }
 ];
 
@@ -76,6 +80,10 @@ const fallbackActions = [
     script: "tools/first-setup.ps1"
   },
   {
+    label: "VS Code setup",
+    script: "tools/install-vscode.ps1"
+  },
+  {
     label: "Recommended setup",
     script: "tools/setup-preset.ps1"
   },
@@ -94,6 +102,14 @@ const fallbackActions = [
   {
     label: "WinPython setup guide",
     script: "tools/winpython-guide.ps1"
+  },
+  {
+    label: "SAM setup",
+    script: "tools/setup-sam.ps1"
+  },
+  {
+    label: "Run SAM sample",
+    script: "tools/run-sam-sample.ps1"
   }
 ];
 
@@ -110,7 +126,7 @@ const fallbackStatusCards = [
   },
   {
     label: "Catalog items",
-    value: "5",
+    value: "6",
     status: "normal"
   },
   {

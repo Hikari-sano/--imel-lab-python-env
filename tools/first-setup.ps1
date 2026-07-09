@@ -1,4 +1,4 @@
-﻿$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\common-winpython.ps1"
 
@@ -25,6 +25,9 @@ foreach ($folder in $folders) {
     Ensure-MemilDirectory (Join-Path $Root $folder)
 }
 
+Write-MemilTitle "Check VS Code"
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "install-vscode.ps1")
 Write-MemilTitle "Check WinPython"
 
 $PythonExe = Find-MemilWinPython

@@ -18,5 +18,9 @@
   {
     "title": "Hugging Face Transformers",
     "description": "Try text AI and natural language processing."
+  },
+  {
+    "title": "SAM / Segment Anything",
+    "description": "Segment objects and regions in images using Meta Segment Anything. Experimental support."
   }
 ]

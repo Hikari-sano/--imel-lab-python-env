@@ -46,18 +46,19 @@ function Find-MemilWinPython {
         return $null
     }
 
-    $candidates = Get-ChildItem -Path $WinPythonDir -Recurse -Filter "python.exe" -ErrorAction SilentlyContinue |
+    $candidate = Get-ChildItem -Path $WinPythonDir -Recurse -Filter "python.exe" -File -ErrorAction SilentlyContinue |
         Where-Object {
             $_.FullName -notlike "*.venv*" -and
             $_.FullName -like "*\python\python.exe"
         } |
-        Select-Object -ExpandProperty FullName
+        Sort-Object FullName |
+        Select-Object -First 1
 
-    if ($candidates.Count -gt 0) {
-        return [string]$candidates[0]
+    if ($null -eq $candidate) {
+        return $null
     }
 
-    return $null
+    return [string]$candidate.FullName
 }
 
 function Show-MemilWinPythonHelp {
@@ -72,7 +73,7 @@ function Show-MemilWinPythonHelp {
     Write-Host "        python.exe"
     Write-Host ""
     Write-Host "Important:"
-    Write-Host "Do not only put Winpython64-xxxx.exe under winpython."
+    Write-Host "Do not only put WinPython64-xxxx.exe under winpython."
     Write-Host "You need to run or extract it first."
     Write-Host ""
     Write-Host "Recommended page:"
@@ -85,6 +86,18 @@ function New-MemilProjectVenv {
         [string]$ProjectDir,
         [string]$PythonExe
     )
+
+    if (-not $PythonExe) {
+        throw "PythonExe is empty. WinPython python.exe was not detected."
+    }
+
+    if ($PythonExe.Length -le 2) {
+        throw "PythonExe looks invalid: $PythonExe"
+    }
+
+    if (-not (Test-Path $PythonExe)) {
+        throw "PythonExe path does not exist: $PythonExe"
+    }
 
     $VenvDir = Join-Path $ProjectDir ".venv"
     $VenvPython = Join-Path $VenvDir "Scripts\python.exe"
@@ -200,5 +213,3 @@ function Update-MemilInstalledStatus {
         ConvertTo-Json -Depth 10 |
         Set-Content -Path $InstalledPath -Encoding UTF8
 }
-
-

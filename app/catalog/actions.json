@@ -4,6 +4,10 @@
     "script": "tools/first-setup.ps1"
   },
   {
+    "label": "VS Code setup",
+    "script": "tools/install-vscode.ps1"
+  },
+  {
     "label": "Recommended setup",
     "script": "tools/setup-preset.ps1"
   },
@@ -22,5 +26,13 @@
   {
     "label": "WinPython setup guide",
     "script": "tools/winpython-guide.ps1"
+  },
+  {
+    "label": "SAM setup",
+    "script": "tools/setup-sam.ps1"
+  },
+  {
+    "label": "Run SAM sample",
+    "script": "tools/run-sam-sample.ps1"
   }
 ]
