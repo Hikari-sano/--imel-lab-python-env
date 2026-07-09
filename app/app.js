@@ -145,6 +145,8 @@ const fallbackRunnerStatus = {
   scriptRoot: "tools"
 };
 
+const executionLogEntries = [];
+
 function renderItems(containerId, items) {
   const container = document.getElementById(containerId);
 
@@ -238,6 +240,63 @@ function renderRunnerStatus(status) {
     <p><strong>Future runtime:</strong> ${status.futureRuntime}</p>
     <p><strong>Script root:</strong> ${status.scriptRoot}</p>
   `;
+}
+
+function renderExecutionLog() {
+  const container = document.getElementById("execution-log");
+
+  if (!container) {
+    return;
+  }
+
+  if (executionLogEntries.length === 0) {
+    container.innerHTML = `
+      <h3>No execution log yet</h3>
+      <p>Select a Quick Action button to add a preview log entry.</p>
+    `;
+    return;
+  }
+
+  const items = executionLogEntries
+    .map((entry) => {
+      return `
+        <div class="item">
+          <h3>${entry.label}</h3>
+          <p><strong>Script:</strong> <code>${entry.script}</code></p>
+          <p><strong>Mode:</strong> ${entry.mode}</p>
+          <p><strong>Time:</strong> ${entry.time}</p>
+        </div>
+      `;
+    })
+    .join("");
+
+  container.innerHTML = items;
+}
+
+function addExecutionLogEntry(label, script) {
+  const now = new Date();
+
+  executionLogEntries.unshift({
+    label,
+    script,
+    mode: "preview only",
+    time: now.toLocaleString()
+  });
+
+  renderExecutionLog();
+}
+
+function setupExecutionLogControls() {
+  const clearButton = document.getElementById("clear-log-button");
+
+  if (!clearButton) {
+    return;
+  }
+
+  clearButton.addEventListener("click", () => {
+    executionLogEntries.length = 0;
+    renderExecutionLog();
+  });
 }
 
 async function loadJsonList(path, fallbackItems, containerId) {
@@ -340,6 +399,8 @@ function setupActionPreview() {
         <p><code>${script}</code></p>
         <p>This GUI prototype does not execute PowerShell scripts yet.</p>
       `;
+
+      addExecutionLogEntry(label, script);
     });
   });
 }
@@ -375,6 +436,9 @@ document.addEventListener("DOMContentLoaded", () => {
   loadActions();
 
   loadRunnerStatus();
+
+  setupExecutionLogControls();
+  renderExecutionLog();
 
   console.log(appInfo);
 });
