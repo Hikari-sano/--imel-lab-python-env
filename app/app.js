@@ -74,6 +74,29 @@ const fallbackActions = [
   }
 ];
 
+const fallbackStatusCards = [
+  {
+    label: "WinPython",
+    value: "Not detected",
+    status: "warn"
+  },
+  {
+    label: "VS Code",
+    value: "Detected",
+    status: "ok"
+  },
+  {
+    label: "Catalog items",
+    value: "5",
+    status: "normal"
+  },
+  {
+    label: "Mode",
+    value: "WinPython only",
+    status: "normal"
+  }
+];
+
 function renderItems(containerId, items) {
   const container = document.getElementById(containerId);
 
@@ -90,6 +113,38 @@ function renderItems(containerId, items) {
     div.innerHTML = `
       <h3>${item.title}</h3>
       <p>${item.description}</p>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function renderStatusCards(items) {
+  const container = document.getElementById("status-cards");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = "";
+
+  items.forEach((item) => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    let statusClass = "";
+
+    if (item.status === "ok") {
+      statusClass = "ok";
+    }
+
+    if (item.status === "warn") {
+      statusClass = "warn";
+    }
+
+    div.innerHTML = `
+      <small>${item.label}</small>
+      <strong class="${statusClass}">${item.value}</strong>
     `;
 
     container.appendChild(div);
@@ -134,6 +189,26 @@ async function loadJsonList(path, fallbackItems, containerId) {
     console.warn(`JSON loading failed: ${path}. Using fallback data.`, error);
 
     renderItems(containerId, fallbackItems);
+  }
+}
+
+async function loadStatusCards() {
+  try {
+    const response = await fetch("./catalog/status.json");
+
+    if (!response.ok) {
+      throw new Error(`Failed to load status cards: ${response.status}`);
+    }
+
+    const items = await response.json();
+
+    renderStatusCards(items);
+
+    console.log("Loaded: ./catalog/status.json");
+  } catch (error) {
+    console.warn("Status JSON loading failed. Using fallback data.", error);
+
+    renderStatusCards(fallbackStatusCards);
   }
 }
 
@@ -188,6 +263,8 @@ document.addEventListener("DOMContentLoaded", () => {
     info.textContent =
       `${appInfo.version} | ${appInfo.branch} | ${appInfo.status}`;
   }
+
+  loadStatusCards();
 
   loadJsonList(
     "./catalog/index.json",

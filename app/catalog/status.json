@@ -1,0 +1,22 @@
+[
+  {
+    "label": "WinPython",
+    "value": "Not detected",
+    "status": "warn"
+  },
+  {
+    "label": "VS Code",
+    "value": "Detected",
+    "status": "ok"
+  },
+  {
+    "label": "Catalog items",
+    "value": "5",
+    "status": "normal"
+  },
+  {
+    "label": "Mode",
+    "value": "WinPython only",
+    "status": "normal"
+  }
+]
