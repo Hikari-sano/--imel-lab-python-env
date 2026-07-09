@@ -23,6 +23,10 @@ struct CommandResult {
     allowed_by_policy: bool,
     mode: String,
     runner: String,
+    validation_status: String,
+    exit_code: Option<i32>,
+    stdout: String,
+    stderr: String,
     message: String,
 }
 
@@ -95,6 +99,29 @@ fn validate_script_path(script: &str) -> Result<String, String> {
     Ok(normalized)
 }
 
+fn blocked_result(
+    payload: CommandPayload,
+    validation_status: &str,
+    message: String,
+) -> CommandResult {
+    CommandResult {
+        ok: false,
+        executed: false,
+        command: payload.command,
+        label: payload.label,
+        script: payload.script,
+        normalized_script: "".to_string(),
+        allowed_by_policy: payload.allowed_by_policy,
+        mode: payload.mode,
+        runner: payload.runner,
+        validation_status: validation_status.to_string(),
+        exit_code: None,
+        stdout: "".to_string(),
+        stderr: message.clone(),
+        message,
+    }
+}
+
 #[tauri::command]
 fn run_script(payload: CommandPayload) -> Result<CommandResult, String> {
     if payload.command != "run_script" {
@@ -102,35 +129,21 @@ fn run_script(payload: CommandPayload) -> Result<CommandResult, String> {
     }
 
     if let Err(reason) = validate_runner_mode(&payload.mode) {
-        return Ok(CommandResult {
-            ok: false,
-            executed: false,
-            command: payload.command,
-            label: payload.label,
-            script: payload.script,
-            normalized_script: "".to_string(),
-            allowed_by_policy: payload.allowed_by_policy,
-            mode: payload.mode,
-            runner: payload.runner,
-            message: format!("Blocked by runner mode lock. {}", reason),
-        });
+        return Ok(blocked_result(
+            payload,
+            "blocked-by-runner-mode",
+            format!("Blocked by runner mode lock. {}", reason),
+        ));
     }
 
     let normalized_script = match validate_script_path(&payload.script) {
         Ok(value) => value,
         Err(reason) => {
-            return Ok(CommandResult {
-                ok: false,
-                executed: false,
-                command: payload.command,
-                label: payload.label,
-                script: payload.script,
-                normalized_script: "".to_string(),
-                allowed_by_policy: payload.allowed_by_policy,
-                mode: payload.mode,
-                runner: payload.runner,
-                message: format!("Blocked by Rust validator. {}", reason),
-            });
+            return Ok(blocked_result(
+                payload,
+                "blocked-by-script-validator",
+                format!("Blocked by Rust validator. {}", reason),
+            ));
         }
     };
 
@@ -145,6 +158,10 @@ fn run_script(payload: CommandPayload) -> Result<CommandResult, String> {
             allowed_by_policy: payload.allowed_by_policy,
             mode: payload.mode,
             runner: payload.runner,
+            validation_status: "blocked-by-frontend-policy".to_string(),
+            exit_code: None,
+            stdout: "".to_string(),
+            stderr: "Blocked by frontend script policy.".to_string(),
             message: "Blocked by frontend script policy. No script was executed.".to_string(),
         });
     }
@@ -159,6 +176,10 @@ fn run_script(payload: CommandPayload) -> Result<CommandResult, String> {
         allowed_by_policy: payload.allowed_by_policy,
         mode: payload.mode,
         runner: payload.runner,
+        validation_status: "approved-dry-run".to_string(),
+        exit_code: None,
+        stdout: "Dry-run only. No PowerShell process was started.".to_string(),
+        stderr: "".to_string(),
         message: "Dry-run mode approved. Rust validator approved this script. PowerShell execution is not enabled yet.".to_string(),
     })
 }
