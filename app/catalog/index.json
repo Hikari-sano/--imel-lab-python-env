@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Common Python packages",
+    "description": "Install basic packages for research and data analysis."
+  },
+  {
+    "title": "Jupyter / JupyterLab",
+    "description": "Use notebooks for experiments and data analysis."
+  },
+  {
+    "title": "YOLO / Ultralytics",
+    "description": "Detect objects in images and videos."
+  },
+  {
+    "title": "Whisper",
+    "description": "Transcribe audio files into text."
+  },
+  {
+    "title": "Hugging Face Transformers",
+    "description": "Try text AI and natural language processing."
+  }
+]

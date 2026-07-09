@@ -5,7 +5,7 @@ const appInfo = {
   status: "Static mockup"
 };
 
-const catalogItems = [
+const fallbackCatalogItems = [
   {
     title: "Common Python packages",
     description: "Install basic packages for research and data analysis."
@@ -28,8 +28,50 @@ const catalogItems = [
   }
 ];
 
-document.addEventListener("DOMContentLoaded", () => {
+function renderCatalog(items) {
+  const catalog = document.getElementById("catalog-list");
 
+  if (!catalog) {
+    return;
+  }
+
+  catalog.innerHTML = "";
+
+  items.forEach((item) => {
+    const div = document.createElement("div");
+
+    div.className = "item";
+
+    div.innerHTML = `
+      <h3>${item.title}</h3>
+      <p>${item.description}</p>
+    `;
+
+    catalog.appendChild(div);
+  });
+}
+
+async function loadCatalog() {
+  try {
+    const response = await fetch("./catalog/index.json");
+
+    if (!response.ok) {
+      throw new Error(`Failed to load catalog: ${response.status}`);
+    }
+
+    const items = await response.json();
+
+    renderCatalog(items);
+
+    console.log("Catalog loaded from app/catalog/index.json");
+  } catch (error) {
+    console.warn("Catalog JSON loading failed. Using fallback data.", error);
+
+    renderCatalog(fallbackCatalogItems);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
   const info = document.querySelector("#app-info p");
 
   if (info) {
@@ -37,24 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `${appInfo.version} | ${appInfo.branch} | ${appInfo.status}`;
   }
 
-  const catalog = document.getElementById("catalog-list");
-
-  if (catalog) {
-    catalog.innerHTML = "";
-
-    catalogItems.forEach(item => {
-      const div = document.createElement("div");
-
-      div.className = "item";
-
-      div.innerHTML = `
-        <h3>${item.title}</h3>
-        <p>${item.description}</p>
-      `;
-
-      catalog.appendChild(div);
-    });
-  }
+  loadCatalog();
 
   console.log(appInfo);
 });
