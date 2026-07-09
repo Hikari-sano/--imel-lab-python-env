@@ -58,7 +58,6 @@ function renderItems(containerId, items) {
 
   items.forEach((item) => {
     const div = document.createElement("div");
-
     div.className = "item";
 
     div.innerHTML = `
@@ -79,15 +78,43 @@ async function loadJsonList(path, fallbackItems, containerId) {
     }
 
     const items = await response.json();
-
     renderItems(containerId, items);
 
     console.log(`Loaded: ${path}`);
   } catch (error) {
     console.warn(`JSON loading failed: ${path}. Using fallback data.`, error);
-
     renderItems(containerId, fallbackItems);
   }
+}
+
+function setupActionPreview() {
+  const preview = document.getElementById("action-preview");
+
+  if (!preview) {
+    console.warn("Action preview element was not found.");
+    return;
+  }
+
+  const buttons = document.querySelectorAll("[data-script]");
+
+  if (buttons.length === 0) {
+    console.warn("No action buttons with data-script were found.");
+    return;
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const label = button.textContent.trim();
+      const script = button.getAttribute("data-script");
+
+      preview.innerHTML = `
+        <h3>${label}</h3>
+        <p>Future script mapping:</p>
+        <p><code>${script}</code></p>
+        <p>This GUI prototype does not execute PowerShell scripts yet.</p>
+      `;
+    });
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -109,6 +136,8 @@ document.addEventListener("DOMContentLoaded", () => {
     fallbackSetupItems,
     "setup-list"
   );
+
+  setupActionPreview();
 
   console.log(appInfo);
 });
