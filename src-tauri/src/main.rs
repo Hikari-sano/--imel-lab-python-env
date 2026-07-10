@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::path::PathBuf;
-use std::process::Command;
+use std::process::{Command, Stdio};
+use std::thread;
+use std::time::{Duration, Instant};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -48,6 +50,8 @@ const ALLOWED_SCRIPTS: &[&str] = &[
 const EXECUTABLE_SCRIPTS: &[&str] = &[
     "tools/health-check.ps1",
 ];
+
+const POWERSHELL_TIMEOUT_SECONDS: u64 = 30;
 
 fn normalize_script_path(script: &str) -> String {
     let normalized = script.replace('\\', "/");
@@ -205,6 +209,75 @@ fn dry_run_result(
     }
 }
 
+fn run_powershell_with_timeout(
+    script_full_path: &PathBuf,
+    root: &PathBuf,
+) -> Result<(bool, Option<i32>, String, String, bool), String> {
+    let mut child = Command::new("powershell.exe")
+        .arg("-NoProfile")
+        .arg("-ExecutionPolicy")
+        .arg("Bypass")
+        .arg("-File")
+        .arg(script_full_path)
+        .current_dir(root)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .map_err(|error| format!("Failed to start PowerShell process: {}", error))?;
+
+    let started_at = Instant::now();
+
+    loop {
+        match child.try_wait() {
+            Ok(Some(_status)) => {
+                let output = child
+                    .wait_with_output()
+                    .map_err(|error| format!("Failed to collect PowerShell output: {}", error))?;
+
+                let success = output.status.success();
+                let exit_code = output.status.code();
+                let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+                let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+
+                return Ok((success, exit_code, stdout, stderr, false));
+            }
+            Ok(None) => {
+                if started_at.elapsed() >= Duration::from_secs(POWERSHELL_TIMEOUT_SECONDS) {
+                    let _ = child.kill();
+
+                    let output = child
+                        .wait_with_output()
+                        .map_err(|error| {
+                            format!("Failed to collect timed-out PowerShell output: {}", error)
+                        })?;
+
+                    let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+                    let mut stderr = String::from_utf8_lossy(&output.stderr).to_string();
+
+                    if !stderr.trim().is_empty() {
+                        stderr.push('\n');
+                    }
+
+                    stderr.push_str(&format!(
+                        "PowerShell execution timed out after {} seconds.",
+                        POWERSHELL_TIMEOUT_SECONDS
+                    ));
+
+                    return Ok((false, output.status.code(), stdout, stderr, true));
+                }
+
+                thread::sleep(Duration::from_millis(100));
+            }
+            Err(error) => {
+                return Err(format!(
+                    "Failed while waiting for PowerShell process: {}",
+                    error
+                ));
+            }
+        }
+    }
+}
+
 fn execute_script(
     payload: CommandPayload,
     normalized_script: String,
@@ -236,54 +309,47 @@ fn execute_script(
         }
     };
 
-    let output = Command::new("powershell.exe")
-        .arg("-NoProfile")
-        .arg("-ExecutionPolicy")
-        .arg("Bypass")
-        .arg("-File")
-        .arg(&script_full_path)
-        .current_dir(root)
-        .output();
+    let run_result = run_powershell_with_timeout(&script_full_path, &root);
 
-    match output {
-        Ok(result) => {
-            let exit_code = result.status.code();
-            let stdout = String::from_utf8_lossy(&result.stdout).to_string();
-            let stderr = String::from_utf8_lossy(&result.stderr).to_string();
-            let success = result.status.success();
-
-            CommandResult {
-                ok: success,
-                executed: true,
-                command: payload.command,
-                label: payload.label,
-                script: payload.script,
-                normalized_script,
-                allowed_by_policy: payload.allowed_by_policy,
-                mode: payload.mode,
-                runner: payload.runner,
-                validation_status: if success {
-                    "executed-success".to_string()
-                } else {
-                    "executed-failed".to_string()
-                },
-                exit_code,
-                stdout,
-                stderr,
-                message: if success {
-                    "PowerShell script executed successfully.".to_string()
-                } else {
-                    "PowerShell script finished with a non-zero exit code.".to_string()
-                },
-            }
-        }
+    match run_result {
+        Ok((success, exit_code, stdout, stderr, timed_out)) => CommandResult {
+            ok: success,
+            executed: true,
+            command: payload.command,
+            label: payload.label,
+            script: payload.script,
+            normalized_script,
+            allowed_by_policy: payload.allowed_by_policy,
+            mode: payload.mode,
+            runner: payload.runner,
+            validation_status: if timed_out {
+                "executed-timeout".to_string()
+            } else if success {
+                "executed-success".to_string()
+            } else {
+                "executed-failed".to_string()
+            },
+            exit_code,
+            stdout,
+            stderr,
+            message: if timed_out {
+                format!(
+                    "PowerShell script timed out after {} seconds.",
+                    POWERSHELL_TIMEOUT_SECONDS
+                )
+            } else if success {
+                "PowerShell script executed successfully.".to_string()
+            } else {
+                "PowerShell script finished with a non-zero exit code.".to_string()
+            },
+        },
         Err(error) => {
-            let message = format!("Failed to start PowerShell process: {}", error);
+            let message = format!("Failed to start or monitor PowerShell process: {}", error);
 
             blocked_result(
                 payload,
                 normalized_script,
-                "failed-to-start-powershell",
+                "failed-to-start-or-monitor-powershell",
                 message,
             )
         }
